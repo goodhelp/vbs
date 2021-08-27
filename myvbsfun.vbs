@@ -8,44 +8,44 @@ MsgBox(myfun.GetMac)
 
 
 class vbsfun
-	rem ÀàÊµÀı»¯Ê±Ö´ĞĞµÄ´úÂë
+	rem ç±»å®ä¾‹åŒ–æ—¶æ‰§è¡Œçš„ä»£ç 
 	private sub Class_Initialize()
 
 	end sub
 
-	rem ÀàÏú»ÙÊ±Ö´ĞĞµÄ´úÂë
+	rem ç±»é”€æ¯æ—¶æ‰§è¡Œçš„ä»£ç 
 	private sub class_terminate()
 
 	end sub
 
-	Rem ÔÚ×ÀÃæ´´½¨Ò»¸ö¼ÇÊÂ±¾¿ì½İ·½Ê½ 
-	rem ²ÎÊı£º¿ì½İ·½Ê½Ãû³Æ  ³ÌĞòµØÖ· ³ÌĞòÔËĞĞ²ÎÊı Í¼±êµØÖ· 
-	rem ·µ»Ø ÎŞ
-	rem Àı call MakeLink("ÂŞ¼¼Êó±êÉèÖÃ","G:\³£ÓÃÈí¼ş\ÂŞ¼¼Êó±êÓÎÏ·Çı¶¯\Rungame.exe","","G:\³£ÓÃÈí¼ş\ÂŞ¼¼Êó±êÓÎÏ·Çı¶¯\48731.ico")
+	Rem åœ¨æ¡Œé¢åˆ›å»ºä¸€ä¸ªè®°äº‹æœ¬å¿«æ·æ–¹å¼ 
+	rem å‚æ•°ï¼šå¿«æ·æ–¹å¼åç§°  ç¨‹åºåœ°å€ ç¨‹åºè¿è¡Œå‚æ•° å›¾æ ‡åœ°å€ 
+	rem è¿”å› æ— 
+	rem ä¾‹ call MakeLink("ç½—æŠ€é¼ æ ‡è®¾ç½®","G:\å¸¸ç”¨è½¯ä»¶\ç½—æŠ€é¼ æ ‡æ¸¸æˆé©±åŠ¨\Rungame.exe","","G:\å¸¸ç”¨è½¯ä»¶\ç½—æŠ€é¼ æ ‡æ¸¸æˆé©±åŠ¨\48731.ico")
 	Public Function MakeLink(linkname,linkexe,linkparm,linkico)
 		Set WshShell = WScript.CreateObject("WScript.Shell")
-		strDesktop = WshShell.SpecialFolders("Desktop") rem ÌØÊâÎÄ¼ş¼Ğ¡°×ÀÃæ¡±
+		strDesktop = WshShell.SpecialFolders("Desktop") rem ç‰¹æ®Šæ–‡ä»¶å¤¹â€œæ¡Œé¢â€
 		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname&".lnk")
-		oShellLink.TargetPath = linkexe  '¿ÉÖ´ĞĞÎÄ¼şÂ·¾¶
-		oShellLink.Arguments = linkparm '³ÌĞòµÄ²ÎÊı
-		oShellLink.WindowStyle = 1 '²ÎÊı1Ä¬ÈÏ´°¿Ú¼¤»î£¬²ÎÊı3×î´ó»¯¼¤»î£¬²ÎÊı7×îĞ¡»¯
-		oShellLink.Hotkey = ""  '¿ì½İ¼ü
+		oShellLink.TargetPath = linkexe  'å¯æ‰§è¡Œæ–‡ä»¶è·¯å¾„
+		oShellLink.Arguments = linkparm 'ç¨‹åºçš„å‚æ•°
+		oShellLink.WindowStyle = 1 'å‚æ•°1é»˜è®¤çª—å£æ¿€æ´»ï¼Œå‚æ•°3æœ€å¤§åŒ–æ¿€æ´»ï¼Œå‚æ•°7æœ€å°åŒ–
+		oShellLink.Hotkey = ""  'å¿«æ·é”®
 		if IsExitAFile(linkico) then
-		oShellLink.IconLocation = linkico&", 0" 'Í¼±ê
+		oShellLink.IconLocation = linkico&", 0" 'å›¾æ ‡
 		else
 		oShellLink.IconLocation = "%SystemRoot%\system32\SHELL32.dll,8"
 		end if
-		oShellLink.Description = ""  '±¸×¢
-		oShellLink.WorkingDirectory = GetExePath(linkexe)  'ÆğÊ¼Î»ÖÃ
-		oShellLink.Save  '´´½¨±£´æ¿ì½İ·½Ê½	
+		oShellLink.Description = ""  'å¤‡æ³¨
+		oShellLink.WorkingDirectory = GetExePath(linkexe)  'èµ·å§‹ä½ç½®
+		oShellLink.Save  'åˆ›å»ºä¿å­˜å¿«æ·æ–¹å¼	
 		Set WshShell=Nothing
 		Set oShellLink=Nothing
 	End Function
 	
-	rem ÊÕ²Ø¼ĞÌí¼ÓÍøÖ·
-	rem ²ÎÊı:ÍøÖ· ¿ì½İÃû³Æ ÊÇ·ñ´´½¨ÔÚÊÕ²Ø¼ĞÀ¸
-	rem ·µ»Ø ÎŞ
-	rem Àı call MakeUrl("http://www.bnwin.com","°ÙÄÔÎÊ",true)	
+	rem æ”¶è—å¤¹æ·»åŠ ç½‘å€
+	rem å‚æ•°:ç½‘å€ å¿«æ·åç§° æ˜¯å¦åˆ›å»ºåœ¨æ”¶è—å¤¹æ 
+	rem è¿”å› æ— 
+	rem ä¾‹ call MakeUrl("http://www.bnwin.com","ç™¾è„‘é—®",true)	
 	Public Function MakeUrl(url,urlname,link)
 		Const ADMINISTRATIVE_TOOLS = 6
 		Set objShell = CreateObject("Shell.Application")
@@ -60,10 +60,10 @@ class vbsfun
 		Set objShell=Nothing
 	End Function
 	
-	rem ĞŞ¸ÄÖ÷Ò³
-	rem ²ÎÊı ÍøÖ·
-	rem ·µ»Ø
-	rem Àı SetHomepage("https://www.baidu.com")
+	rem ä¿®æ”¹ä¸»é¡µ
+	rem å‚æ•° ç½‘å€
+	rem è¿”å›
+	rem ä¾‹ SetHomepage("https://www.baidu.com")
 	Public Function SetHomepage(url)
 		dim oShell
 		Set oShell = CreateObject("WScript.Shell")
@@ -71,10 +71,10 @@ class vbsfun
 		set oShell=Nothing
 	End Function
 	
-	rem ¸ù¾İexeÈ¡ËùÔÚÂ·¾¶
-	rem ²ÎÊı ÍêÈ«Â·¾¶  
-	rem ·µ»Ø Â·¾¶
-	rem Àı call GetExePat("CProgram FilesInternet Explorer\iexplore.exe")
+	rem æ ¹æ®exeå–æ‰€åœ¨è·¯å¾„
+	rem å‚æ•° å®Œå…¨è·¯å¾„  
+	rem è¿”å› è·¯å¾„
+	rem ä¾‹ call GetExePat("CProgram FilesInternet Explorer\iexplore.exe")
 	Public Function GetExePath(strFileName)
 		strFileName=Replace(strFileName,"/","\")
 		dim ipos
@@ -82,10 +82,10 @@ class vbsfun
 		GetExePath=left(strFileName,ipos)
 	End Function
 
-	rem ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ 
-	rem ²ÎÊı ÎÄ¼şµØÖ·  
-	rem ·µ»Ø true»òfalse
-	rem Àı call IsExitAFile("c:\abc.txt")
+	rem åˆ¤æ–­æ–‡ä»¶æ˜¯å¦å­˜åœ¨ 
+	rem å‚æ•° æ–‡ä»¶åœ°å€  
+	rem è¿”å› trueæˆ–false
+	rem ä¾‹ call IsExitAFile("c:\abc.txt")
 	Public Function IsExitAFile(filespec)
         Dim fso
         Set fso=CreateObject("Scripting.FileSystemObject")        
@@ -97,10 +97,10 @@ class vbsfun
 		Set fso=Nothing
 	End Function 
 	
-	rem ÅĞ¶ÏÄ¿Â¼ÊÇ·ñ´æÔÚ 
-	rem ²ÎÊı Ä¿Â¼µØÖ· ÊÇ·ñ´´½¨  
-	rem ·µ»Ø true»òfalse
-	rem Àı call IsExitDir("c:\abc",true)
+	rem åˆ¤æ–­ç›®å½•æ˜¯å¦å­˜åœ¨ 
+	rem å‚æ•° ç›®å½•åœ°å€ æ˜¯å¦åˆ›å»º  
+	rem è¿”å› trueæˆ–false
+	rem ä¾‹ call IsExitDir("c:\abc",true)
 	Public Function IsExitDir(DirName,Create)
         Dim fso
         Set fso=CreateObject("Scripting.FileSystemObject")        
@@ -115,13 +115,13 @@ class vbsfun
 		Set fso=Nothing
 	End Function
 	
-	rem ´´½¨¶à¼¶Ä¿Â¼
-	rem ²ÎÊı  Â·¾¶ 
-	rem ·µ»Ø ÎŞ
-	rem Àı  call MyCreateFolder("c:\ad\1233\dd")
+	rem åˆ›å»ºå¤šçº§ç›®å½•
+	rem å‚æ•°  è·¯å¾„ 
+	rem è¿”å› æ— 
+	rem ä¾‹  call MyCreateFolder("c:\ad\1233\dd")
 	Public Sub MyCreateFolder(sPath)
 		sPath=Replace(sPath,"/","\")
-		if Right(sPath,1)="\" then sPath=left(sPath,len(sPath)-1) 'É¾³ıÄ¿Â¼Ä©Î²µÄ\
+		if Right(sPath,1)="\" then sPath=left(sPath,len(sPath)-1) 'åˆ é™¤ç›®å½•æœ«å°¾çš„\
 		Dim fso
 		set fso = CreateObject("Scripting.FileSystemObject")
 		if(Len(sPath) > 0 And fso.FolderExists(sPath) = False) Then
@@ -129,17 +129,17 @@ class vbsfun
 			pos = InStrRev(sPath, "\")
 			if(pos <> 0) Then
 				sLeft = Left(sPath, pos - 1)
-				MyCreateFolder sLeft            'ÏÈ´´½¨¸¸Ä¿Â¼
+				MyCreateFolder sLeft            'å…ˆåˆ›å»ºçˆ¶ç›®å½•
 			end if
-			fso.CreateFolder sPath              'ÔÙ´´½¨±¾Ä¿Â¼
+			fso.CreateFolder sPath              'å†åˆ›å»ºæœ¬ç›®å½•
 		end if
 		set fso = Nothing
 	End Sub
 	
-	rem ¿½±´Ä¿Â¼
-	rem ²ÎÊı Ô´Ä¿Â¼  Ä¿Â¼Ä¿Â¼  ÊÇ·ñ¸²Éw
-	rem ·µ»Ø ¿½±´µÄÎÄ¼şÊı
-	rem Àı call XCopy("c:\123" "d:\123",true)
+	rem æ‹·è´ç›®å½•
+	rem å‚æ•° æºç›®å½•  ç›®å½•ç›®å½•  æ˜¯å¦è¦†è“‹
+	rem è¿”å› æ‹·è´çš„æ–‡ä»¶æ•°
+	rem ä¾‹ call XCopy("c:\123" "d:\123",true)
 	Public Function XCopy( source, destination, overwrite)
 		source=Replace(source,"/","\")
 		destination=Replace(destination,"/","\")
@@ -170,10 +170,10 @@ class vbsfun
 		Set fso=Nothing
 	End Function
 
-	rem ¸´ÖÆÎÄ¼ş
-	rem ²ÎÊı Ô´ÎÄ¼ş Ä¿±êÎÄ¼ş  ÊÇ·ñ¸²Éw
-	rem ·µ»Ø ÎŞ
-	rem Àı call CopyFile("c:\abd\123.txt","d:\323\aaa.txt",true)	
+	rem å¤åˆ¶æ–‡ä»¶
+	rem å‚æ•° æºæ–‡ä»¶ ç›®æ ‡æ–‡ä»¶  æ˜¯å¦è¦†è“‹
+	rem è¿”å› æ— 
+	rem ä¾‹ call CopyFile("c:\abd\123.txt","d:\323\aaa.txt",true)	
 	Public Function CopyFile(sfile,dfile,overwrite)
 		dim fso
 		set fso = CreateObject("Scripting.FileSystemObject")
@@ -185,10 +185,10 @@ class vbsfun
 		set fso = nothing
 	End Function
 	
-	rem É¾³ıÎÄ¼ş
-	rem ²ÎÊı Ä¿±êÎÄ¼ş
-	rem ·µ»Ø ÎŞ
-	rem Àı call DelFile("c:\abd\123.txt")	
+	rem åˆ é™¤æ–‡ä»¶
+	rem å‚æ•° ç›®æ ‡æ–‡ä»¶
+	rem è¿”å› æ— 
+	rem ä¾‹ call DelFile("c:\abd\123.txt")	
 	Public Function DelFile(sfile)
 		dim fso
 		set fso = CreateObject("Scripting.FileSystemObject")
@@ -196,10 +196,10 @@ class vbsfun
 		set fso = nothing
 	End Function
 	
-	rem É¾³ıÄ¿Â¼
-	rem ²ÎÊı Ä¿Â¼
-	rem ·µ»Ø ÎŞ
-	rem Àı call DelDir("c:\abd\123.txt")	
+	rem åˆ é™¤ç›®å½•
+	rem å‚æ•° ç›®å½•
+	rem è¿”å› æ— 
+	rem ä¾‹ call DelDir("c:\abd\123.txt")	
 	Public Function DelDir(sPath)
 		sPath=Replace(sPath,"/","\")
 	    if Right(sPath,1)="\" then sPath=left(sPath,len(sPath)-1)
@@ -209,21 +209,26 @@ class vbsfun
 		set fso = nothing
 	End Function
 	
-	rem ÔËĞĞ³ÌĞò
-	rem ²ÎÊı ³ÌĞò ÊÇ·ñµÈ´ı½áÊø
-	rem ·µ»Ø ÎŞ
-	rem Àı call Run("c:\abd\123.txt",false)	
+	rem è¿è¡Œç¨‹åº
+	rem å‚æ•° ç¨‹åº æ˜¯å¦ç­‰å¾…ç»“æŸ
+	rem è¿”å› æ— 
+	rem ä¾‹ call Run("c:\abd\123.txt",false)	
 	Public Function Run(sPath,wait)
-		dim shell
-		Set shell = Wscript.createobject("WScript.shell")
-		shell.run """"&sPath&"""",,wait
-		set shell = nothing
+		dim fso
+		set fso = CreateObject("Scripting.FileSystemObject")
+	    if fso.FileExists(sPath) then
+			dim shell
+			Set shell = Wscript.createobject("WScript.shell")
+			shell.run """"&sPath&"""",,wait
+			set shell = nothing
+		end if
+		set fso=Nothing
 	End Function
 	
-	rem ping»úÆ÷ÊÇ·ñÔÚÏß
-	rem ²ÎÊı IPµØÖ· 
-	rem ·µ»Øtrue»òfalse
-	rem Àı call ping("192.168.0.1")
+	rem pingæœºå™¨æ˜¯å¦åœ¨çº¿
+	rem å‚æ•° IPåœ°å€ 
+	rem è¿”å›trueæˆ–false
+	rem ä¾‹ call ping("192.168.0.1")
 	Public Function Ping(strComputer)
 		Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
 		Set colItems = objWMIService.ExecQuery _
@@ -239,10 +244,10 @@ class vbsfun
 		Set objWMIService=Nothing
 	End Function
 	
-	rem È¡µÃÍø¿¨MACµØÖ·
-	rem ²ÎÊı ÎŞ
-	rem ·µ»Ø±¾»úmacµØÖ·
-	rem Àı call GetMac	
+	rem å–å¾—ç½‘å¡MACåœ°å€
+	rem å‚æ•° æ— 
+	rem è¿”å›æœ¬æœºmacåœ°å€
+	rem ä¾‹ call GetMac	
 	Public Function GetMac
 		Dim mc,mo
 		Set mc=GetObject("Winmgmts:").InstancesOf("Win32_NetworkAdapterConfiguration")
@@ -254,11 +259,11 @@ class vbsfun
 		Next
 	End Function
 	
-	rem ÎÄ¼ş×ª³É16½øÖÆ×Ö·û´® ÓĞÎó https://blog.csdn.net/yuman198629/article/details/8595694
-	rem ²ÎÊı ÎÄ¼şÃû 16½øÖÆÎÄ¼ş ÈçºÎµÚ¶ş¸ö²ÎÊıÎª¿Õ£¬Ö±½Ó·µ»Ø16½øÖÆ×Ö·û´®
-	rem ·µ»Ø16½øÖÆ×Ö·û´®
-	rem ÀıÉú³É×Ö·û´® call ReadBinary("c:\windows\notepad.exe","")
-	rem ÀıÉú³ÉÎÄ±¾ÎÄ¼ş call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
+	rem æ–‡ä»¶è½¬æˆ16è¿›åˆ¶å­—ç¬¦ä¸² æœ‰è¯¯ https://blog.csdn.net/yuman198629/article/details/8595694
+	rem å‚æ•° æ–‡ä»¶å 16è¿›åˆ¶æ–‡ä»¶ å¦‚ä½•ç¬¬äºŒä¸ªå‚æ•°ä¸ºç©ºï¼Œç›´æ¥è¿”å›16è¿›åˆ¶å­—ç¬¦ä¸²
+	rem è¿”å›16è¿›åˆ¶å­—ç¬¦ä¸²
+	rem ä¾‹ç”Ÿæˆå­—ç¬¦ä¸² call ReadBinary("c:\windows\notepad.exe","")
+	rem ä¾‹ç”Ÿæˆæ–‡æœ¬æ–‡ä»¶ call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
 	Public Function ReadBinary(FileName,TxtFile)
 		Const adTypeBinary = 1
 		Dim stream, xmldom, node
@@ -285,11 +290,11 @@ class vbsfun
 		Set xmldom = Nothing
 	End Function
 	
-	rem 16½øÖÆ×Ö·û´®×ª³É¿ÉÖ´ĞĞÎÄ¼ş 
-	rem ²ÎÊı ×Ö·û´® ¿ÉÖ´ĞĞÎÄ¼ş(ÍêÈ«Â·¾¶) ÊÇ·ñÊÇÎÄ¼ş 
-	rem ·µ»Ø ÎŞ
-	rem Àı ×Ö·û´®Éú³É call BinaryToFile("4D5A90000300000004000000FFFF","d:\123.exe",false)
-	rem Àı ÎÄ±¾ÎÄ¼şÉú³É call BinaryToFile("d:\123.txt","d:\123.exe",true)
+	rem 16è¿›åˆ¶å­—ç¬¦ä¸²è½¬æˆå¯æ‰§è¡Œæ–‡ä»¶ 
+	rem å‚æ•° å­—ç¬¦ä¸² å¯æ‰§è¡Œæ–‡ä»¶(å®Œå…¨è·¯å¾„) æ˜¯å¦æ˜¯æ–‡ä»¶ 
+	rem è¿”å› æ— 
+	rem ä¾‹ å­—ç¬¦ä¸²ç”Ÿæˆ call BinaryToFile("4D5A90000300000004000000FFFF","d:\123.exe",false)
+	rem ä¾‹ æ–‡æœ¬æ–‡ä»¶ç”Ÿæˆ call BinaryToFile("d:\123.txt","d:\123.exe",true)
 	Public Function BinaryToFile(WriteData,dropFileName,isfile)
 		Set FSO = CreateObject("Scripting.FileSystemObject")
 	    if isfile then

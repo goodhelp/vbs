@@ -303,4 +303,22 @@ class vbsfun
 		Set FSO=Nothing
 	End Function
 
+    rem 导入vbs文件 
+    rem 参数 vbs文件
+    rem 返回 无
+    rem 例 call import("d:\abc.vbs")
+    Public Sub import(sFile)
+        Dim oFSO, oFile
+        Dim sCode
+        Set oFSO= CreateObject("Scripting.FileSystemObject")
+        Set oFile= oFSO.OpenTextFile(sFile, 1)
+        With oFile
+            sCode= .ReadAll()
+            .Close
+        End With
+        Set oFile= Nothing
+        Set oFSO= Nothing
+        ExecuteGlobal sCode
+    End Sub
+
 end class

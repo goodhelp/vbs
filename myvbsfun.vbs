@@ -1,7 +1,11 @@
 set myfun=New vbsfun
 'call myfun.CopyFile("d:\Users\Administrator\Desktop\myvbsfun.vbs","d:\aa\123.vbs",true)
 'call myfun.Run("regedit",true)
-MsgBox("结束")
+'call myfun.SetHomepage("http://www.bnwin.com")
+'call myfun.ReadBinary("c:\windows\notepad.exe","d:\123.txt")
+call myfun.BinaryToFile("d:\123.txt","d:\123.exe",true)
+MsgBox(myfun.GetMac)
+
 
 class vbsfun
 	rem 类实例化时执行的代码
@@ -17,11 +21,11 @@ class vbsfun
 	Rem 在桌面创建一个记事本快捷方式 
 	rem 参数：快捷方式名称  程序地址 程序运行参数 图标地址 
 	rem 返回 无
-	rem 例 call MakeLink("罗技鼠标设置.lnk","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
+	rem 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
 	Public Function MakeLink(linkname,linkexe,linkparm,linkico)
 		Set WshShell = WScript.CreateObject("WScript.Shell")
 		strDesktop = WshShell.SpecialFolders("Desktop") rem 特殊文件夹“桌面”
-		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname)
+		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname&".lnk")
 		oShellLink.TargetPath = linkexe  '可执行文件路径
 		oShellLink.Arguments = linkparm '程序的参数
 		oShellLink.WindowStyle = 1 '参数1默认窗口激活，参数3最大化激活，参数7最小化
@@ -36,6 +40,35 @@ class vbsfun
 		oShellLink.Save  '创建保存快捷方式	
 		Set WshShell=Nothing
 		Set oShellLink=Nothing
+	End Function
+	
+	rem 收藏夹添加网址
+	rem 参数:网址 快捷名称 是否创建在收藏夹栏
+	rem 返回 无
+	rem 例 call MakeUrl("http://www.bnwin.com","百脑问",true)	
+	Public Function MakeUrl(url,urlname,link)
+		Const ADMINISTRATIVE_TOOLS = 6
+		Set objShell = CreateObject("Shell.Application")
+		Set objFolder = objShell.Namespace(ADMINISTRATIVE_TOOLS)
+		Set objFolderItem = objFolder.Self 		
+		Set objShell = WScript.CreateObject("WScript.Shell")
+		strDesktopFld = objFolderItem.Path
+		if link then strDesktopFld=strDesktopFld&"\links"
+		Set objURLShortcut = objShell.CreateShortcut(strDesktopFld & "\"&urlname&".url")
+		objURLShortcut.TargetPath = url
+		objURLShortcut.Save
+		Set objShell=Nothing
+	End Function
+	
+	rem 修改主页
+	rem 参数 网址
+	rem 返回
+	rem 例 SetHomepage("https://www.baidu.com")
+	Public Function SetHomepage(url)
+		dim oShell
+		Set oShell = CreateObject("WScript.Shell")
+		oShell.RegWrite "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url	
+		set oShell=Nothing
 	End Function
 	
 	rem 根据exe取所在路径
@@ -206,4 +239,72 @@ class vbsfun
 		Set objWMIService=Nothing
 	End Function
 	
+	rem 取得网卡MAC地址
+	rem 参数 无
+	rem 返回本机mac地址
+	rem 例 call GetMac	
+	Public Function GetMac
+		Dim mc,mo
+		Set mc=GetObject("Winmgmts:").InstancesOf("Win32_NetworkAdapterConfiguration")
+		For Each mo In mc
+		If mo.IPEnabled=True Then
+		  GetMac=mo.MacAddress
+		Exit For
+		End If
+		Next
+	End Function
+	
+	rem 文件转成16进制字符串 有误 https://blog.csdn.net/yuman198629/article/details/8595694
+	rem 参数 文件名 16进制文件 如何第二个参数为空，直接返回16进制字符串
+	rem 返回16进制字符串
+	rem 例生成字符串 call ReadBinary("c:\windows\notepad.exe","")
+	rem 例生成文本文件 call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
+	Public Function ReadBinary(FileName,TxtFile)
+		Const adTypeBinary = 1
+		Dim stream, xmldom, node
+		Set xmldom = CreateObject("Microsoft.XMLDOM")
+		Set node = xmldom.CreateElement("binary")
+		node.DataType = "bin.hex"
+		Set stream = CreateObject("ADODB.Stream")
+		stream.Type = adTypeBinary
+		stream.Open
+		stream.LoadFromFile FileName
+		node.NodeTypedValue = stream.Read
+		stream.Close
+		Set stream = Nothing
+		if len(TxtFile)=0 then
+			ReadBinary = node.Text
+		else
+			Set FSO = CreateObject("Scripting.FileSystemObject")
+			set f =fso.CreateTextFile(TxtFile,true)
+			f.Write node.Text
+			f.close
+			set FSO=Nothing
+		end if
+		Set node = Nothing
+		Set xmldom = Nothing
+	End Function
+	
+	rem 16进制字符串转成可执行文件 
+	rem 参数 字符串 可执行文件(完全路径) 是否是文件 
+	rem 返回 无
+	rem 例 字符串生成 call BinaryToFile("4D5A90000300000004000000FFFF","d:\123.exe",false)
+	rem 例 文本文件生成 call BinaryToFile("d:\123.txt","d:\123.exe",true)
+	Public Function BinaryToFile(WriteData,dropFileName,isfile)
+		Set FSO = CreateObject("Scripting.FileSystemObject")
+	    if isfile then
+			Set file = fso.OpenTextFile(WriteData, 1, false)
+			WriteData=file.readall
+			file.close
+		end if
+		If FSO.FileExists(dropFileName)=False Then
+		Set FileObj = FSO.CreateTextFile(dropFileName, True)
+		For i = 1 To Len(WriteData) Step 2
+		   FileObj.Write Chr(CLng("&H" & Mid(WriteData,i,2)))
+		Next
+		FileObj.Close
+		End If
+		Set FSO=Nothing
+	End Function
+
 end class

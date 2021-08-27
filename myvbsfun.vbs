@@ -5,6 +5,7 @@ set myfun=New vbsfun
 'call myfun.ReadBinary("c:\windows\notepad.exe","d:\123.txt")
 call myfun.BinaryToFile("d:\123.txt","d:\123.exe",true)
 MsgBox(myfun.GetMac)
+set myfun=nothing
 
 
 class vbsfun

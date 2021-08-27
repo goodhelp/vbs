@@ -1,13 +1,3 @@
-set myfun=New vbsfun
-'call myfun.CopyFile("d:\Users\Administrator\Desktop\myvbsfun.vbs","d:\aa\123.vbs",true)
-'call myfun.Run("regedit",true)
-'call myfun.SetHomepage("http://www.bnwin.com")
-'call myfun.ReadBinary("c:\windows\notepad.exe","d:\123.txt")
-call myfun.BinaryToFile("d:\123.txt","d:\123.exe",true)
-MsgBox(myfun.GetMac)
-set myfun=nothing
-
-
 class vbsfun
 	rem 类实例化时执行的代码
 	private sub Class_Initialize()

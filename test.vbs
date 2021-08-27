@@ -1,11 +1,20 @@
-import("g:\myvbsfun.vbs")
+import("E:\Èí¼þ¹¤³Ì\vbs\myvbsfun.vbs")
 set myfun=New vbsfun
 'call myfun.CopyFile("d:\Users\Administrator\Desktop\myvbsfun.vbs","d:\aa\123.vbs",true)
 'call myfun.Run("regedit",true)
 'call myfun.SetHomepage("http://www.bnwin.com")
 'call myfun.ReadBinary("c:\windows\notepad.exe","d:\123.txt")
-call myfun.BinaryToFile("d:\123.txt","d:\123.exe",true)
-MsgBox(myfun.GetMac)
+'call myfun.BinaryToFile("d:\123.txt","d:\123.exe",true)
+'call myfun.RunBat(".\test.bat")
+'call myfun.ImportReg(".\reg.reg")
+'call myfun.CloseProcess("SunloginRemote.exe")
+'MsgBox(myfun.IsProcess("qq.exe"))
+MsgBox(myfun.GetComputerName)
+
+dim cptname
+cptname=myfun.GetComputerName
+
+
 set myfun=nothing
 
 Sub import(sFile)

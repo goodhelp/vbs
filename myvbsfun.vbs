@@ -8,8 +8,21 @@ class vbsfun
 	private sub class_terminate()
 
 	end sub
+	
+	rem ===================函数列表========================
+	rem Function MakeLink(linkname,linkexe,linkparm,linkico) 例 MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
+	rem
+	rem
+	rem
+	rem
+	rem
+	rem
+	rem
+	rem
+	rem	
+	rem ====================================================
 
-	Rem 在桌面创建一个记事本快捷方式 
+	Rem 在桌面创建一个快捷方式 
 	rem 参数：快捷方式名称  程序地址 程序运行参数 图标地址 
 	rem 返回 无
 	rem 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
@@ -284,6 +297,46 @@ class vbsfun
 		Next	
 	End Function
 	
+	rem 取得操作系统名
+	rem 参数 无
+	rem 返回  操作系统名
+	rem 例 call GetOS	
+	Public Function GetOs
+	   ComputerName="."
+		Dim objWMIService,colItems,objItem,objAddress
+		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
+		Set colItems = objWMIService.ExecQuery("Select * from Win32_OperatingSystem")
+		For Each objItem in colItems
+			'GetOs = objItem.Caption&" 版本"& objItem.Version
+			if instr(objItem.Version,"6.1")>0 then '6.0是vista 6.1是win7 6.2是win8 10.0是win10
+			  GetOS="Win7"
+			  exit for
+			elseif instr(objItem.Version,"10.0")>0 then
+			  GetOs="Win10"
+			  exit for
+			end if			
+		Next	
+	End Function
+	
+	rem 取得 操作系统位数
+	rem 参数 无
+	rem 返回  操作系统位数 64位系统返回x64 32位系统返回x86
+	rem 例 call X86orX64	
+	Public Function X86orX64
+	   ComputerName="."
+		Dim objWMIService,colItems,objItem,objAddress
+		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
+		Set colItems = objWMIService.ExecQuery("Select * from Win32_ComputerSystem",,48)
+		For Each objItem in colItems
+		  If InStr(objItem.SystemType, "64") <> 0 Then
+		     X86orX64 = "x64" 
+		     exit for
+		  Else
+		     X86orX64 = "x86"
+		     exit for
+		  End If 		
+		Next
+	End Function	
 	
 	rem 文件转成16进制字符串 有误 https://blog.csdn.net/yuman198629/article/details/8595694
 	rem 参数 文件名 16进制文件 如何第二个参数为空，直接返回16进制字符串
@@ -464,5 +517,16 @@ class vbsfun
 		Next		
 		Set ws = Nothing
 	End Sub	
+	
+	rem 正则匹配
+	
+	Public Function RegExpTest(patrn, strng)  
+	  Set re = New RegExp  
+	  re.Pattern = patrn  
+	  re.IgnoreCase = True 
+	  re.Global = True 
+	  Set Matches = re.Execute(strng)  
+	  RegExpTest = Matches.Count  
+	End Function
 
 end class

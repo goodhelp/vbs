@@ -9,6 +9,7 @@ set myfun=New vbsfun
 'call myfun.ImportReg(".\reg.reg")
 'call myfun.CloseProcess("SunloginRemote.exe")
 'MsgBox(myfun.IsProcess("qq.exe"))
+MsgBox(myfun.GetOs)
 MsgBox(myfun.GetComputerName)
 
 dim cptname

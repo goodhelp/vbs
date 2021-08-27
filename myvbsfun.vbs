@@ -316,6 +316,28 @@ class vbsfun
 		Set xmldom = Nothing
 	End Function
 	
+	rem 16进制字符串转成可执行文件 
+	rem 参数 字符串 可执行文件(完全路径) 是否是文件 
+	rem 返回 无
+	rem 例 字符串生成 call BinaryToFile("4D5A90000300000004000000FFFF","d:\123.exe",false)
+	rem 例 文本文件生成 call BinaryToFile("d:\123.txt","d:\123.exe",true)
+	Public Function BinaryToFile(WriteData,dropFileName,isfile)
+		Set FSO = CreateObject("Scripting.FileSystemObject")
+	    if isfile then
+			Set file = fso.OpenTextFile(WriteData, 1, false)
+			WriteData=file.readall
+			file.close
+		end if
+		If FSO.FileExists(dropFileName)=False Then
+		Set FileObj = FSO.CreateTextFile(dropFileName, True)
+		For i = 1 To Len(WriteData) Step 2
+		   FileObj.Write Chr(CLng("&H" & Mid(WriteData,i,2)))
+		Next
+		FileObj.Close
+		End If
+		Set FSO=Nothing
+	End Function
+	
 	rem '延时函数	
 	rem 参数  秒
 	rem 返回 无
@@ -354,28 +376,6 @@ class vbsfun
 			set shell = nothing
 		end if
 		set fso=Nothing
-	End Function
-	
-	rem 16进制字符串转成可执行文件 
-	rem 参数 字符串 可执行文件(完全路径) 是否是文件 
-	rem 返回 无
-	rem 例 字符串生成 call BinaryToFile("4D5A90000300000004000000FFFF","d:\123.exe",false)
-	rem 例 文本文件生成 call BinaryToFile("d:\123.txt","d:\123.exe",true)
-	Public Function BinaryToFile(WriteData,dropFileName,isfile)
-		Set FSO = CreateObject("Scripting.FileSystemObject")
-	    if isfile then
-			Set file = fso.OpenTextFile(WriteData, 1, false)
-			WriteData=file.readall
-			file.close
-		end if
-		If FSO.FileExists(dropFileName)=False Then
-		Set FileObj = FSO.CreateTextFile(dropFileName, True)
-		For i = 1 To Len(WriteData) Step 2
-		   FileObj.Write Chr(CLng("&H" & Mid(WriteData,i,2)))
-		Next
-		FileObj.Close
-		End If
-		Set FSO=Nothing
 	End Function
 
     rem 导入vbs文件 

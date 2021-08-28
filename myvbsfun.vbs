@@ -383,6 +383,23 @@ class vbsfun
 		Set xmldom = Nothing
 	End Sub
 
+	rem 下载远程文件到本地
+	rem 参数 远程地址 本地文件
+	rem 返回 无
+	rem 例 call DownFile("https://dl.360safe.com/360sd/360sd_x64_std_5.0.0.8183C.exe","d:\360sd.exe")
+	Public Function DownFile(UrlFile,SaveFile)
+		Set xPost=CreateObject("Microsoft.XMLHTTP")
+		xPost.Open "get",UrlFile,0
+		xPost.Send()
+		Set sGet=CreateObject("ADODB.Stream")
+		sGet.type=1
+		sGet.Mode=3
+		sGet.Open()
+		sGet.Write(xPost.responseBody)
+		sGet.SaveToFile SaveFile,2
+	    Set sGet=Nothing
+		Set xPost=Nothing
+	End Function
 	
 	rem '延时函数	
 	rem 参数  秒
@@ -564,5 +581,91 @@ class vbsfun
 	    tid=DWX.GetWindowThreadProcessId(hwnd,0) '取得线程ID
 		DWX.PostThreadMessage tid,&H12,0,0  '退出线程 
 	End Function	
-
+	
+	rem 同步网络时间
+	rem 参数 无
+	rem 返回 
+	rem 例 call SyncTime
+	Public Sub SyncTime()
+        On error resume next	
+	    url = "http://free.timeanddate.com/clock/i1jyoa52/n236/tt0/tw0/tm3/td2/th1/tb4" 
+		'Instantiate
+		Set xmlHTTP = CreateObject("MSXML2.ServerXMLHTTP") 
+		Set objRegEx = CreateObject("VBScript.RegExp")
+		'Make Request
+		xmlHTTP.open "GET", url, false 
+		xmlHTTP.send ""
+		'Wait for Response
+		xmlHTTP.waitForResponse()
+		objRegEx.Global = True 
+		'If status is 200, then it's OK
+		If xmlHTTP.status = 200 then
+		   Contents=xmlHTTP.responseText
+		'get date info
+		   objRegEx.Pattern = "\d{2,2}/\d{2,2}/\d{4,4}"
+			Set colMatches = objRegEx.Execute(Contents) 
+			If colMatches.Count > 0 Then
+			 For Each strMatch in colMatches 
+				 strMatches = strMatches & strMatch.Value
+			 Next
+			End If
+			dtmNewDate = FormatDateTime(strMatches,D)
+		'set date on local computer
+		   WshShell.Run "%comspec% /c date " & dtmNewDate,0 
+		'get time info
+		   objRegEx.Pattern = "\d{2,2}:\d{2,2}:\d{2,2}"
+			Set colMatches = objRegEx.Execute(Contents) 
+			If colMatches.Count > 0 Then
+			 For Each strMatch in colMatches 
+				 strMatches1 = strMatches1 & strMatch.Value
+			 Next
+			End If
+			dtmNewTime = strMatches1
+			'wscript.echo dtmNewTime
+		'set time on local computer
+		   WshShell.Run "%comspec% /c time " & dtmNewTime,0 
+		End if
+	End Sub
+	
+	rem 取得系统开机时间 关机时间 返回时间较长，可用于学习查询系统日志
+	rem 参数 无
+	rem 返回 
+	rem 例 call GetSysRunTime
+	Public Function GetSysRunTime()
+		strComputer = "."
+		Set objWMIService = GetObject("winmgmts:" _
+		& "{impersonationLevel=impersonate}!\\" _
+		& strComputer & "\root\cimv2")
+		Set colLoggedEvents = objWMIService.ExecQuery _
+		("Select * from Win32_NTLogEvent " _
+		& "Where Logfile = 'System' And EventCode = '6005' Or EventCode = '6006'")
+		For Each objEvent In colLoggedEvents
+		  Flag = Flag + 1
+		  If Flag = 1 Then
+			GetSysRunTime= "本次开机时间: " & FormatWMIUTC(objEvent.TimeWritten)
+		  ElseIf Flag = 2 Then
+			GetSysRunTime=GetSysRunTime& " 上次关机时间: " & FormatWMIUTC(objEvent.TimeWritten)
+		  ElseIf Flag = 3 Then
+			GetSysRunTime=GetSysRunTime& " 上次开机时间: " & FormatWMIUTC(objEvent.TimeWritten)
+			Exit For
+		  End If
+		Next
+    End Function
+	
+	rem 格式化wmi时间
+	'FormatUTC
+	Function FormatWMIUTC(WMIDateString)
+	  DS = " // :: "
+	  FormatWMIUTC = Left(WMIDateString,2)
+	  For i = 2 To 7
+		FormatWMIUTC = FormatWMIUTC & Mid(WMIDateString, i * 2 - 1, 2) & Mid(DS,i,1)
+	  Next
+	  'FormatWMIUTC = Mid(WMIDateString, 1, 4) & "年" _
+	  '      & Mid(WMIDateString, 5, 2) & "月" _
+	  '      & Mid(WMIDateString, 7, 2) & "日 " _
+	  '      & Mid (WMIDateString, 9, 2) & ":" _
+	  '      & Mid(WMIDateString, 11, 2) & ":" _
+	  '      & Mid(WMIDateString,13, 2)
+	End Function
+	
 end class

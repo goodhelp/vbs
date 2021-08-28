@@ -36,6 +36,10 @@ set myfun=New vbsfun
 'MsgBox myfun.ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page") '读注册表值
 'call myfun.HideWindow("Notepad","") '按类名或标题隐藏窗口 未关闭
 'call myfun.KillThread("Notepad","")  '按类名或标题中止显示此窗口的线程 如果是单线程，程序则会退出 可用于关闭广告窗口
+'call myfun.DownFile("http://gh.api.99988866.xyz/github.com/Chuyu-Team/Dism-Multi-language/releases/download/v10.1.1001.10/Dism++10.1.1001.10_d4ba4eb035254b3326d6adc6638bc9c8daea7018.zip","d:\dism.zip")  '下载远程文件 
+'all myfun.SyncTime
+'MsgBox myfun.GetSysRunTime()
+
 
 dim cptname
 cptname=myfun.GetComputerName

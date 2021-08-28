@@ -1,5 +1,6 @@
 rem 导入自定义类
-import("E:\软件工程\vbs\myvbsfun.vbs")
+CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
+import(CurrentPath&"\myvbsfun.vbs")
 set myfun=New vbsfun
 'call myfun.MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico") '创建桌面快捷方式
 'call myfun.MakeUrl("http://www.bnwin.com","百脑问",true) '收藏夹栏添加网址
@@ -14,11 +15,11 @@ set myfun=New vbsfun
 'call myfun.DelDir("c:\abd\")  '删除目录
 'call myfun.Run("c:\windows\notepad.exe",false)	 '运行程序
 'call myfun.ping("192.168.0.1")  'ping是否在线
-'call myfun.GetMac   '取得网卡mac地址
-'call myfun.GetIP   '取得本机ip地址
-'call myfun.GetComputerName   '取得机器名
-'call myfun.GetOS  '取得操作系统是win7还是win10
-'call myfun.X86orX64  '系统是64位还是32位
+'MsgBox myfun.GetMac   '取得网卡mac地址
+'MsgBox myfun.GetIP   '取得本机ip地址
+'MsgBox myfun.GetComputerName   '取得机器名
+'MsgBox myfun.GetOS  '取得操作系统是win7还是win10
+'MsgBox myfun.X86orX64  '系统是64位还是32位
 'call myfun.ReadBinary("c:\windows\notepad.exe","d:\123.txt") '把文件生成16进制字符串文本文件
 'call myfun.WriteBinary("d:\123.exe","d:\123.txt",true)  '把16进制文本文件还原为可执行文件
 'call myfun.Sleep(5)  '延时5秒
@@ -28,9 +29,13 @@ set myfun=New vbsfun
 'call myfun.CloseProcess("SunloginRemote.exe")  '关闭指定进程
 'call myfun.IsProcess("qq.exe")	 '检查指定进程是否存在
 'call myfun.IsProcessEx("qq.exe|notepad.exe")  '指定指定列表进程是否存在
-'call myfun.CloseProcessEx("qq.exe｜wecat.exe")  '结束进程列表
+'call myfun.CloseProcessEx("qq.exe｜wechat.exe")  '结束进程列表
 'call myfun.RegExpTest("sdf|456","123456789")  '正则判断是否存在指定内容
-'call myfun.KillWindow("星旺角")  '关闭指定标题窗口
+'call myfun.KillWindow("","计算机")  '关闭指定类名或标题的窗口
+'call myfun.WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")  '写注册表值
+'MsgBox myfun.ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page") '读注册表值
+'call myfun.HideWindow("Notepad","") '按类名或标题隐藏窗口 未关闭
+'call myfun.KillThread("Notepad","")  '按类名或标题中止显示此窗口的线程 如果是单线程，程序则会退出 可用于关闭广告窗口
 
 dim cptname
 cptname=myfun.GetComputerName

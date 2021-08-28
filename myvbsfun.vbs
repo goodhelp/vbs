@@ -7,14 +7,27 @@ class vbsfun
 		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
 		WshShell.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
-		DWX.Register "USER32.DLL", "ShowWindow", "I=hl", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "FindWindow", "I=ss", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "SetWindowPos", "I=Hllllll", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "SendMessage", "I=hlls", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "PostMessage", "I=hlls", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "SetWindowText", "I=Hs", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "FindWindowEx", "I=llss", "f=s", "R=l"
-		DWX.Register "USER32.DLL", "SetCursorPos", "I=ll", "f=s", "R=l"
+		'-----windows api--- kernel32.dll----------
+		DWX.Register "kernel32 ", "Beep", "i=uu"  
+		DWX.Register "kernel32", "GetCommandLine", "r=s"  
+		'-----windows api--- user32.dll----------
+		DWX.Register "user32", "EnumWindows", "i=ph" 
+		DWX.Register "user32", "GetWindowTextW", "i=hpl"
+		DWX.Register "user32", "MessageBoxW", "i=hwwu", "r=m"
+		DWX.Register "user32", "FindWindow", "i=ss","r=m"
+		DWX.Register "user32", "SendMessage", "i=huuu"
+		DWX.Register "user32", "ShowWindow", "i=hu", "r=l"
+	    DWX.Register "user32", "SetWindowPos", "i=hllllll", "f=s", "r=l"
+		DWX.Register "user32", "PostMessage", "i=hlll", "r=l"
+		DWX.Register "user32", "SetWindowText", "i=hs", "r=l"
+		DWX.Register "user32", "FindWindowEx", "i=llss", "r=l"
+		DWX.Register "user32", "SetCursorPos", "i=ll",  "r=l"
+		DWX.Register "user32", "SetWindowRgn","i=hpl","r=l"
+		DWX.Register "user32", "GetWindowThreadProcessId","i=hl","r=l"
+		DWX.Register "user32", "PostThreadMessage","i=uull","r=l"
+		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"
+		
+		
 		'https://www.cnblogs.com/jinjiangongzuoshi/p/3905773.html
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 	end sub
@@ -490,17 +503,66 @@ class vbsfun
 	  RegExpTest = Matches.Count  
 	  Set re=Nothing
 	End Function
+	
+	rem '写注册表
+	rem 参数 key 值 类型
+	rem 返回 无
+	rem 例	call WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")
+	Public Sub WriteReg(regkey, value, typeName) 
+		If typeName = "" Then
+			WshShell.RegWrite regkey, value
+		Else
+			WshShell.RegWrite regkey, value, typeName
+		End If
+	End Sub
+
+	rem '读取注册表，搜索key，返回所在路径
+	rem 参数 key
+	rem 返回 无
+	rem 例	call ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page")
+	Public Function ReadReg(regkey) '
+		ReadReg = WshShell.RegRead(regkey)
+	End Function
 
 	rem '关闭指定标题窗口
-	rem 参数 窗口名
+	rem 参数 类名 窗口名
 	rem 返回 无
-	rem 例	call KillWindow("无标题")
-	Public Function KillWindow(winName)
-	   hWnd=DWX.FindWindowA(Null,winName)
-	   DWX.SendMessage hWnd,&H10,0,0 	   
-	   'dim rcSuccess
+	rem 例	call KillWindow("","无标题")
+	Public Function KillWindow(classname,winName)
+		if len(classname)=0 then classname=0
+		if len(winName)=0 then winName=0
+		hwnd=DWX.FindWindow(classname,winName)
+		DWX.SendMessage hwnd,&H10,0,0 '关闭窗口
+		'DWX.PostMessage hwnd,&H112,&HF060, 0 '关闭窗口
+		'DWX.PostMessage hwnd, &H82, 0, 0 '销毁窗口
+	   'dim rcSuccess  '使用wscript发送alt+F4
 	   'rcSuccess = WshShell.AppActivate(winName)
 	   'if rcSuccess then WshShell.sendkeys "%{F4}"
 	End Function
+	
+	rem '隐藏指定标题窗口
+	rem 参数 类名 窗口名
+	rem 返回 无
+	rem 例	call HideWindow("Notepad","")
+	Public Function HideWindow(classname,winName)
+		if len(classname)=0 then classname=0
+		if len(winName)=0 then winName=0
+		hwnd=DWX.FindWindow(classname,winName)
+	    hrgn =DWX.CreateRectRgn(0,0,0,0)
+	    DWX.SetWindowRgn hwnd,hrgn,true '隐藏视界
+		DWX.ShowWindow hwnd,0  '隐藏窗口
+	End Function
+
+	rem '按照窗口中止线程
+	rem 参数 类名 窗口名
+	rem 返回 无
+	rem 例	call KillThread("Notepad","")
+	Public Function KillThread(classname,winName)
+		if len(classname)=0 then classname=0
+		if len(winName)=0 then winName=0
+		hwnd=DWX.FindWindow(classname,winName)
+	    tid=DWX.GetWindowThreadProcessId(hwnd,0) '取得线程ID
+		DWX.PostThreadMessage tid,&H12,0,0  '退出线程 
+	End Function	
 
 end class

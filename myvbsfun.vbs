@@ -17,7 +17,7 @@ class vbsfun
 		DWX.Register "user32", "FindWindow", "i=ss","r=m"
 		DWX.Register "user32", "SendMessage", "i=huuu"
 		DWX.Register "user32", "ShowWindow", "i=hu", "r=l"
-	    DWX.Register "user32", "SetWindowPos", "i=hllllll", "f=s", "r=l"
+	    DWX.Register "user32", "SetWindowPos", "i=hllllll", "r=l"
 		DWX.Register "user32", "PostMessage", "i=hlll", "r=l"
 		DWX.Register "user32", "SetWindowText", "i=hs", "r=l"
 		DWX.Register "user32", "FindWindowEx", "i=llss", "r=l"

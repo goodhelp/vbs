@@ -1,15 +1,30 @@
 class vbsfun
 	rem 类实例化时执行的代码
-	Public WshShell,FSO
+	Public WshShell,FSO,DWX,CurrentPath
 	private sub Class_Initialize()
 		Set WshShell = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
+		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
+		WshShell.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
+		Set DWX = CreateObject("DynamicWrapperX")
+		DWX.Register "USER32.DLL", "ShowWindow", "I=hl", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "FindWindow", "I=ss", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "SetWindowPos", "I=Hllllll", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "SendMessage", "I=hlls", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "PostMessage", "I=hlls", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "SetWindowText", "I=Hs", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "FindWindowEx", "I=llss", "f=s", "R=l"
+		DWX.Register "USER32.DLL", "SetCursorPos", "I=ll", "f=s", "R=l"
+		'https://www.cnblogs.com/jinjiangongzuoshi/p/3905773.html
+		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 	end sub
 
 	rem 类销毁时执行的代码
 	private sub class_terminate()
+		WshShell.run "regsvr32 /i /u /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set WshShell=Nothing
 		Set FSO=Nothing
+		Set DWX=Nothing
 	end sub
 	
 	Rem 在桌面创建一个快捷方式 
@@ -473,6 +488,19 @@ class vbsfun
 	  re.Global = True 
 	  Set Matches = re.Execute(strng)  
 	  RegExpTest = Matches.Count  
+	  Set re=Nothing
+	End Function
+
+	rem '关闭指定标题窗口
+	rem 参数 窗口名
+	rem 返回 无
+	rem 例	call KillWindow("无标题")
+	Public Function KillWindow(winName)
+	   hWnd=DWX.FindWindowA(Null,winName)
+	   DWX.SendMessage hWnd,&H10,0,0 	   
+	   'dim rcSuccess
+	   'rcSuccess = WshShell.AppActivate(winName)
+	   'if rcSuccess then WshShell.sendkeys "%{F4}"
 	End Function
 
 end class

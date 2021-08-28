@@ -30,11 +30,12 @@ set myfun=New vbsfun
 'call myfun.IsProcessEx("qq.exe|notepad.exe")  '指定指定列表进程是否存在
 'call myfun.CloseProcessEx("qq.exe｜wecat.exe")  '结束进程列表
 'call myfun.RegExpTest("sdf|456","123456789")  '正则判断是否存在指定内容
+'call myfun.KillWindow("星旺角")  '关闭指定标题窗口
 
 dim cptname
 cptname=myfun.GetComputerName
 
-MsgBox(cptname&"运行结束")
+'MsgBox(cptname&"运行结束")
 set myfun=nothing
 
 Sub import(sFile)

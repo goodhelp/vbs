@@ -7,7 +7,9 @@ class vbsfun
 		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
 		WshShell.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
-		'-----windows api--- kernel32.dll----------
+		'-----windows api--- kernel32.dll---------- 
+		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
+		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
 		DWX.Register "kernel32", "GetCommandLine", "r=s"  
 		'-----windows api--- user32.dll----------
@@ -25,11 +27,9 @@ class vbsfun
 		DWX.Register "user32", "SetWindowRgn","i=hpl","r=l"
 		DWX.Register "user32", "GetWindowThreadProcessId","i=hl","r=l"
 		DWX.Register "user32", "PostThreadMessage","i=uull","r=l"
-		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"
+		'--------------gdi32.dll-----------------------------
+		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"	
 		
-		
-		'https://www.cnblogs.com/jinjiangongzuoshi/p/3905773.html
-		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 	end sub
 
 	rem 类销毁时执行的代码

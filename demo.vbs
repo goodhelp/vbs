@@ -43,6 +43,8 @@ set myfun=New vbsfun
 'MsgBox myfun.IsSuperAdmin() '判断无盘是否有超级用户
 'MsgBox myfun.FromUnixTime("1630211522",8) 'unix时间转北京时间
 'msgbox myfun.ToUnixTime(now, 8)  '把当前时间转成unix时间
+'myfun.WriteIni "节点","键名","值","d:\123.ini"   '写INI文件
+'msgbox myfun.ReadIni("节点","键名","默认值","d:\123.ini") '读ini文件
 
 dim cptname
 cptname=myfun.GetComputerName

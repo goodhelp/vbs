@@ -1,9 +1,10 @@
 class vbsfun
-	rem 类实例化时执行的代码
+	' 类实例化时执行的代码
 	Public WshShell,FSO,DWX,CurrentPath
 	private sub Class_Initialize()
 		Set WshShell = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
+		Set Dict = CreateObject("Scripting.Dictionary")
 		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
 		WshShell.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
@@ -11,7 +12,9 @@ class vbsfun
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
-		DWX.Register "kernel32", "GetCommandLine", "r=s"  
+		DWX.Register "kernel32", "GetCommandLine", "r=s" 
+        DWX.Register "kernel32", "GetPrivateProfileString","i=sssSus", "r=u" 
+		DWX.Register "kernel32", "WritePrivateProfileString","i=ssss", "r=l" 
 		'-----windows api--- user32.dll----------
 		DWX.Register "user32", "EnumWindows", "i=ph" 
 		DWX.Register "user32", "GetWindowTextW", "i=hpl"
@@ -32,18 +35,19 @@ class vbsfun
 		
 	end sub
 
-	rem 类销毁时执行的代码
+	' 类销毁时执行的代码
 	private sub class_terminate()
 		WshShell.run "regsvr32 /i /u /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set WshShell=Nothing
 		Set FSO=Nothing
+		Set Dict=Nothing
 		Set DWX=Nothing
 	end sub
 	
-	Rem 在桌面创建一个快捷方式 
-	rem 参数：快捷方式名称  程序地址 程序运行参数 图标地址 
-	rem 返回 无
-	rem 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
+	' 在桌面创建一个快捷方式 
+	' 参数：快捷方式名称  程序地址 程序运行参数 图标地址 
+	' 返回 无
+	' 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
 	Public Function MakeLink(linkname,linkexe,linkparm,linkico)		
 		strDesktop = WshShell.SpecialFolders("Desktop") rem 特殊文件夹“桌面”
 		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname&".lnk")
@@ -62,10 +66,10 @@ class vbsfun
 		Set oShellLink=Nothing
 	End Function
 	
-	rem 收藏夹添加网址
-	rem 参数:网址 快捷名称 是否创建在收藏夹栏
-	rem 返回 无
-	rem 例 call MakeUrl("http://www.bnwin.com","百脑问",true)	
+	' 收藏夹添加网址
+	' 参数:网址 快捷名称 是否创建在收藏夹栏
+	' 返回 无
+	' 例 call MakeUrl("http://www.bnwin.com","百脑问",true)	
 	Public Function MakeUrl(url,urlname,link)
 		Const ADMINISTRATIVE_TOOLS = 6
 		Set objShell = CreateObject("Shell.Application")
@@ -79,18 +83,18 @@ class vbsfun
 		Set objShell=Nothing
 	End Function
 	
-	rem 修改主页
-	rem 参数 网址
-	rem 返回
-	rem 例 call SetHomepage("https://www.baidu.com")
+	' 修改主页
+	' 参数 网址
+	' 返回
+	' 例 call SetHomepage("https://www.baidu.com")
 	Public Function SetHomepage(url)
 		WshShell.RegWrite "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url	
 	End Function
 	
-	rem 根据exe取所在路径
-	rem 参数 完全路径  
-	rem 返回 路径
-	rem 例 call GetExePath("CProgram FilesInternet Explorer\iexplore.exe")
+	' 根据exe取所在路径
+	' 参数 完全路径  
+	' 返回 路径
+	' 例 call GetExePath("CProgram FilesInternet Explorer\iexplore.exe")
 	Public Function GetExePath(strFileName)
 		strFileName=Replace(strFileName,"/","\")
 		dim ipos
@@ -98,10 +102,10 @@ class vbsfun
 		GetExePath=left(strFileName,ipos)
 	End Function
 
-	rem 判断文件是否存在 
-	rem 参数 文件地址  
-	rem 返回 true或false
-	rem 例 call IsExitFile("c:\abc.txt")
+	' 判断文件是否存在 
+	' 参数 文件地址  
+	' 返回 true或false
+	' 例 call IsExitFile("c:\abc.txt")
 	Public Function IsExitFile(filespec)     
         If FSO.fileExists(filespec) Then         
 			IsExitFile=True        
@@ -110,10 +114,10 @@ class vbsfun
         End If
 	End Function 
 	
-	rem 判断目录是否存在 
-	rem 参数 目录地址 是否创建  
-	rem 返回 true或false
-	rem 例 call IsExitDir("c:\abc",true)
+	' 判断目录是否存在 
+	' 参数 目录地址 是否创建  
+	' 返回 true或false
+	' 例 call IsExitDir("c:\abc",true)
 	Public Function IsExitDir(DirName,Create)       
         If FSO.folderExists(DirName) Then         
 			IsExitDir=True        
@@ -125,10 +129,10 @@ class vbsfun
         End If
 	End Function
 	
-	rem 创建多级目录
-	rem 参数  路径 
-	rem 返回 无
-	rem 例  call MyCreateFolder("c:\ad\1233\dd")
+	' 创建多级目录
+	' 参数  路径 
+	' 返回 无
+	' 例  call MyCreateFolder("c:\ad\1233\dd")
 	Public Sub MyCreateFolder(sPath)
 		sPath=Replace(sPath,"/","\")
 		if Right(sPath,1)="\" then sPath=left(sPath,len(sPath)-1) '删除目录末尾的\
@@ -143,10 +147,10 @@ class vbsfun
 		end if
 	End Sub
 	
-	rem 拷贝目录
-	rem 参数 源目录  目录目录  是否覆蓋
-	rem 返回 拷贝的文件数
-	rem 例 call XCopy("c:\123","d:\123",true)
+	' 拷贝目录
+	' 参数 源目录  目录目录  是否覆蓋
+	' 返回 拷贝的文件数
+	' 例 call XCopy("c:\123","d:\123",true)
 	Public Function XCopy(source, destination, overwrite)
 		source=Replace(source,"/","\")
 		destination=Replace(destination,"/","\")
@@ -175,10 +179,10 @@ class vbsfun
 		XCopy = CopyCount
 	End Function
 
-	rem 复制文件
-	rem 参数 源文件 目标文件  是否覆蓋
-	rem 返回 无
-	rem 例 call CopyFile("c:\abd\123.txt","d:\323\aaa.txt",true)	
+	' 复制文件
+	' 参数 源文件 目标文件  是否覆蓋
+	' 返回 无
+	' 例 call CopyFile("c:\abd\123.txt","d:\323\aaa.txt",true)	
 	Public Function CopyFile(sfile,dfile,overwrite)
 		if (overwrite and FSO.FileExists(dfile)) then FSO.DeleteFile dfile,true
 		if Not FSO.FileExists(GetExePath(dfile)) then
@@ -187,38 +191,38 @@ class vbsfun
 		if FSO.fileExists(sFile) then FSO.CopyFile sfile, dfile 
 	End Function
 	
-	rem 删除文件
-	rem 参数 目标文件
-	rem 返回 无
-	rem 例 call DelFile("c:\abd\123.txt")	
+	' 删除文件
+	' 参数 目标文件
+	' 返回 无
+	' 例 call DelFile("c:\abd\123.txt")	
 	Public Function DelFile(sfile)
 		if FSO.FileExists(sfile) then FSO.DeleteFile sfile,true
 	End Function
 	
-	rem 删除目录
-	rem 参数 目录
-	rem 返回 无
-	rem 例 call DelDir("c:\abd\")	
+	' 删除目录
+	' 参数 目录
+	' 返回 无
+	' 例 call DelDir("c:\abd\")	
 	Public Function DelDir(sPath)
 		sPath=Replace(sPath,"/","\")
 	    if Right(sPath,1)="\" then sPath=left(sPath,len(sPath)-1)
 		if FSO.FolderExists(sPath) then FSO.DeleteFolder sPath
 	End Function
 	
-	rem 运行程序
-	rem 参数 程序 是否等待结束
-	rem 返回 无
-	rem 例 call Run("c:\abd\123.txt",false)	
+	' 运行程序
+	' 参数 程序 是否等待结束
+	' 返回 无
+	' 例 call Run("c:\abd\123.txt",false)	
 	Public Function Run(sPath,wait)
 	    if FSO.FileExists(sPath) then
 			WshShell.run """"&sPath&"""",,wait
 		end if
 	End Function
 	
-	rem ping机器是否在线
-	rem 参数 IP地址 
-	rem 返回true或false
-	rem 例 call ping("192.168.0.1")
+	' ping机器是否在线
+	' 参数 IP地址 
+	' 返回true或false
+	' 例 call ping("192.168.0.1")
 	Public Function Ping(strComputer)
 		Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
 		Set colItems = objWMIService.ExecQuery _
@@ -234,10 +238,10 @@ class vbsfun
 		Set objWMIService=Nothing
 	End Function
 	
-	rem 取得网卡MAC地址
-	rem 参数 无
-	rem 返回本机mac地址
-	rem 例 call GetMac	
+	' 取得网卡MAC地址
+	' 参数 无
+	' 返回本机mac地址
+	' 例 call GetMac	
 	Public Function GetMac
 		Dim mc,mo
 		Set mc=GetObject("Winmgmts:").InstancesOf("Win32_NetworkAdapterConfiguration")
@@ -249,10 +253,10 @@ class vbsfun
 		Next
 	End Function
 	
-	rem 取得本机IP地址
-	rem 参数 无
-	rem 返回本机IP地址
-	rem 例 call GetIP
+	' 取得本机IP地址
+	' 参数 无
+	' 返回本机IP地址
+	' 例 call GetIP
 	Public Function GetIP
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
@@ -268,10 +272,10 @@ class vbsfun
 		Next
 	End Function
 
-	rem 取得机器名称
-	rem 参数 无
-	rem 返回本机机器名称
-	rem 例 call GetComputerName	
+	' 取得机器名称
+	' 参数 无
+	' 返回本机机器名称
+	' 例 call GetComputerName	
 	Public Function GetComputerName
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
@@ -283,10 +287,10 @@ class vbsfun
 		Next	
 	End Function
 	
-	rem 取得操作系统名
-	rem 参数 无
-	rem 返回  操作系统名
-	rem 例 call GetOS	
+	' 取得操作系统名
+	' 参数 无
+	' 返回  操作系统名
+	' 例 call GetOS	
 	Public Function GetOs
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
@@ -304,10 +308,10 @@ class vbsfun
 		Next	
 	End Function
 	
-	rem 取得 操作系统位数
-	rem 参数 无
-	rem 返回  操作系统位数 64位系统返回x64 32位系统返回x86
-	rem 例 call X86orX64	
+	' 取得 操作系统位数
+	' 参数 无
+	' 返回  操作系统位数 64位系统返回x64 32位系统返回x86
+	' 例 call X86orX64	
 	Public Function X86orX64
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
@@ -324,11 +328,11 @@ class vbsfun
 		Next
 	End Function	
 	
-	rem 文件转成16进制字符串
-	rem 参数 文件名 16进制文件 如何第二个参数为空，直接返回16进制字符串
-	rem 返回16进制字符串 或存为文件    16进制文本文件会比可执行程序大一倍
-	rem 例生成字符串 call ReadBinary("c:\windows\notepad.exe","")
-	rem 例生成文本文件 call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
+	' 文件转成16进制字符串
+	' 参数 文件名 16进制文件 如何第二个参数为空，直接返回16进制字符串
+	' 返回16进制字符串 或存为文件    16进制文本文件会比可执行程序大一倍
+	' 例生成字符串 call ReadBinary("c:\windows\notepad.exe","")
+	' 例生成文本文件 call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
 	Public Function ReadBinary(FileName,TxtFile)
 		Const adTypeBinary = 1
 		Dim stream, xmldom, node
@@ -353,11 +357,11 @@ class vbsfun
 		Set xmldom = Nothing
 	End Function
 	
-	rem 16进制字符串转成可执行文件 
-	rem 参数 字符串 可执行文件(完全路径) 是否是文件 
-	rem 返回 无
-	rem 例 字符串生成 call BinaryToFile("d:\123.exe","4D5A90000300000004000000FFFF",false)
-	rem 例 文本文件生成 call BinaryToFile("d:\123.exe","d:\123.txt",true)
+	' 16进制字符串转成可执行文件 
+	' 参数 字符串 可执行文件(完全路径) 是否是文件 
+	' 返回 无
+	' 例 字符串生成 call BinaryToFile("d:\123.exe","4D5A90000300000004000000FFFF",false)
+	' 例 文本文件生成 call BinaryToFile("d:\123.exe","d:\123.txt",true)
 	Public Sub WriteBinary(exeFile, txtData,IsFile)
 		Dim WriteData
 		if IsFile then
@@ -383,10 +387,10 @@ class vbsfun
 		Set xmldom = Nothing
 	End Sub
 
-	rem 下载远程文件到本地
-	rem 参数 远程地址 本地文件
-	rem 返回 无
-	rem 例 call DownFile("https://dl.360safe.com/360sd/360sd_x64_std_5.0.0.8183C.exe","d:\360sd.exe")
+	' 下载远程文件到本地
+	' 参数 远程地址 本地文件
+	' 返回 无
+	' 例 call DownFile("https://dl.360safe.com/360sd/360sd_x64_std_5.0.0.8183C.exe","d:\360sd.exe")
 	Public Function DownFile(UrlFile,SaveFile)
 		Set xPost=CreateObject("Microsoft.XMLHTTP")
 		xPost.Open "get",UrlFile,0
@@ -401,38 +405,38 @@ class vbsfun
 		Set xPost=Nothing
 	End Function
 	
-	rem '延时函数	
-	rem 参数  秒
-	rem 返回 无
-	rem 例 call Sleep(5)
+	' '延时函数	
+	' 参数  秒
+	' 返回 无
+	' 例 call Sleep(5)
 	Public Sub Sleep(sec)
 		WScript.sleep sec*1000 
 	End sub
 	
-	rem 导入注册表文件
-	rem 参数 文件名
-	rem 返回 无
-	rem 例 call ImportReg("d:\1.reg")
+	' 导入注册表文件
+	' 参数 文件名
+	' 返回 无
+	' 例 call ImportReg("d:\1.reg")
 	Public Function ImportReg(regFile)
 	    if FSO.FileExists(regFile) then
 			WshShell.run "regedit.exe /s """&regFile&"""",0
 		end if
 	End Function	
 	
-	rem 运行bat文件
-	rem 参数 文件名
-	rem 返回 无
-	rem 例 Call RunBat(batFile)
+	' 运行bat文件
+	' 参数 文件名
+	' 返回 无
+	' 例 Call RunBat(batFile)
 	Public Function RunBat(batFile)
 	    if FSO.FileExists(batFile) then
 			WshShell.run """"&batFile&"""",0
 		end if
 	End Function
 
-    rem 导入vbs文件 
-    rem 参数 vbs文件
-    rem 返回 无
-    rem 例 call import("d:\abc.vbs")
+    ' 导入vbs文件 
+    ' 参数 vbs文件
+    ' 返回 无
+    ' 例 call import("d:\abc.vbs")
     Public Sub import(sFile)
         Dim oFile
         Dim sCode
@@ -447,18 +451,20 @@ class vbsfun
         ExecuteGlobal sCode
     End Sub
 	
-	rem 关闭指定进程 
-	rem 参数 进程名
-	rem 返回 无
-	rem 例 call CloseProcess("winrar.exe")
+	' 关闭指定进程 
+	' 参数 进程名
+	' 返回 无
+	' 例 call CloseProcess("winrar.exe")
 	Public Sub CloseProcess(ExeName)
-		WshShell.run "Taskkill /f /im " & ExeName,0
+	    if IsProcess(ExeName) then
+		  WshShell.run "Taskkill /f /im " & ExeName,0
+		end if
 	End Sub
 
-	rem '检测进程  
-	rem 参数 进程名
-	rem 返回 进程正在运行，返回true
-	rem 例 Call IsProcess("qq.exe")	
+	' '检测进程  
+	' 参数 进程名
+	' 返回 进程正在运行，返回true
+	' 例 Call IsProcess("qq.exe")	
 	Public Function IsProcess(ExeName)
 		Dim WMI, Obj, Objs,i
 		IsProcess = False
@@ -474,10 +480,10 @@ class vbsfun
 		Set WMI = Nothing
 	End Function
 	
-	rem '检测进程组
-	rem 参数 进程列表，进程之间用|分隔
-	rem 返回 进程列表中只要有一个进程在运行返回true
-	rem 例	Call IsProcessEx("qq.exe|notepad.exe")
+	' '检测进程组
+	' 参数 进程列表，进程之间用|分隔
+	' 返回 进程列表中只要有一个进程在运行返回true
+	' 例	Call IsProcessEx("qq.exe|notepad.exe")
 	Public Function IsProcessEx(ExeName)
 		Dim WMI, Obj, Objs,ProcessName,i
 		IsProcessEx = False
@@ -496,20 +502,22 @@ class vbsfun
 		Set WMI = Nothing
 	End Function
 	
-	rem '结束进程组
-	rem 参数 进程列表，中间用|分隔
-	rem 返回 无
-	rem 例	call CloseProcessEx("qq.exe｜wecat.exe")
+	' '结束进程组
+	' 参数 进程列表，中间用|分隔
+	' 返回 无
+	' 例	call CloseProcessEx("qq.exe｜wecat.exe")
 	Public Sub CloseProcessEx(ExeName)
 		dim ProcessName,CmdCode,i
 		ProcessName = Split(ExeName, "|")
 		For i=0 to UBound(ProcessName)
-			CmdCode=CmdCode & " /im " & ProcessName(i)
-			WshShell.run "Taskkill /f" & CmdCode,0
+		    if IsProcess(ProcessName(i)) then  '如果进程存在
+			  CmdCode=CmdCode & " /im " & ProcessName(i)
+			  WshShell.run "Taskkill /f" & CmdCode,0
+			end if
 		Next		
 	End Sub	
 	
-	rem 正则匹配
+	' 正则匹配
 	
 	Public Function RegExpTest(patrn, strng)  
 	  Set re = New RegExp  
@@ -521,10 +529,10 @@ class vbsfun
 	  Set re=Nothing
 	End Function
 	
-	rem '写注册表
-	rem 参数 key 值 类型
-	rem 返回 无
-	rem 例	call WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")
+	' '写注册表
+	' 参数 key 值 类型
+	' 返回 无
+	' 例	call WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")
 	Public Sub WriteReg(regkey, value, typeName) 
 		If typeName = "" Then
 			WshShell.RegWrite regkey, value
@@ -533,10 +541,10 @@ class vbsfun
 		End If
 	End Sub
 
-	rem '读取注册表，搜索key，返回所在路径
-	rem 参数 key
-	rem 返回 无
-	rem 例	call ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page")
+	' '读取注册表，搜索key，返回所在路径
+	' 参数 key
+	' 返回 无
+	' 例	call ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page")
 	Public Function ReadReg(regkey) '
 	    on error resume next
 		err.clear
@@ -546,51 +554,57 @@ class vbsfun
 		 end if 
 	End Function
 
-	rem '关闭指定标题窗口
-	rem 参数 类名 窗口名
-	rem 返回 无
-	rem 例	call KillWindow("","无标题")
+	' '关闭指定标题窗口
+	' 参数 类名 窗口名
+	' 返回 无
+	' 例	call KillWindow("","无标题")
 	Public Function KillWindow(classname,winName)
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
-		DWX.SendMessage hwnd,&H10,0,0 '关闭窗口
+		if hwnd<>0 then
+		  DWX.SendMessage hwnd,&H10,0,0 '关闭窗口
 		'DWX.PostMessage hwnd,&H112,&HF060, 0 '关闭窗口
 		'DWX.PostMessage hwnd, &H82, 0, 0 '销毁窗口
+		end if
 	   'dim rcSuccess  '使用wscript发送alt+F4
 	   'rcSuccess = WshShell.AppActivate(winName)
 	   'if rcSuccess then WshShell.sendkeys "%{F4}"
 	End Function
 	
-	rem '隐藏指定标题窗口
-	rem 参数 类名 窗口名
-	rem 返回 无
-	rem 例	call HideWindow("Notepad","")
+	' '隐藏指定标题窗口
+	' 参数 类名 窗口名
+	' 返回 无
+	' 例	call HideWindow("Notepad","")
 	Public Function HideWindow(classname,winName)
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
-	    hrgn =DWX.CreateRectRgn(0,0,0,0)
-	    DWX.SetWindowRgn hwnd,hrgn,true '隐藏视界
-		DWX.ShowWindow hwnd,0  '隐藏窗口
+		if hwnd<>0 then
+	      hrgn =DWX.CreateRectRgn(0,0,0,0)
+	      DWX.SetWindowRgn hwnd,hrgn,true '隐藏视界
+		  DWX.ShowWindow hwnd,0  '隐藏窗口
+		End If
 	End Function
 
-	rem '按照窗口中止线程
-	rem 参数 类名 窗口名
-	rem 返回 无
-	rem 例	call KillThread("Notepad","")
+	' '按照窗口中止线程
+	' 参数 类名 窗口名
+	' 返回 无
+	' 例	call KillThread("Notepad","")
 	Public Function KillThread(classname,winName)
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
-	    tid=DWX.GetWindowThreadProcessId(hwnd,0) '取得线程ID
-		DWX.PostThreadMessage tid,&H12,0,0  '退出线程 
+		if hwnd<>0 then
+			tid=DWX.GetWindowThreadProcessId(hwnd,0) '取得线程ID
+			DWX.PostThreadMessage tid,&H12,0,0  '退出线程 
+		end if
 	End Function	
 	
-	rem 同步网络时间
-	rem 参数 无
-	rem 返回 
-	rem 例 call SyncTime
+	' 同步网络时间
+	' 参数 无
+	' 返回 
+	' 例 call SyncTime
 	Public Sub SyncTime()
         On error resume next	
 	    url = "http://free.timeanddate.com/clock/i1jyoa52/n236/tt0/tw0/tm3/td2/th1/tb4" 
@@ -635,10 +649,10 @@ class vbsfun
 		End if
 	End Sub
 	
-	rem 取得系统开机时间 关机时间 返回时间较长，可用于学习查询系统日志
-	rem 参数 无
-	rem 返回 
-	rem 例 call GetSysRunTime
+	' 取得系统开机时间 关机时间 返回时间较长，可用于学习查询系统日志
+	' 参数 无
+	' 返回 
+	' 例 call GetSysRunTime
 	Public Function GetSysRunTime()
 		strComputer = "."
 		Set objWMIService = GetObject("winmgmts:" _
@@ -660,7 +674,7 @@ class vbsfun
 		Next
     End Function
 	
-	rem 格式化wmi时间
+	' 格式化wmi时间
 	'FormatUTC
 	Public Function FormatWMIUTC(WMIDateString)
 	  DS = " // :: "
@@ -701,10 +715,10 @@ class vbsfun
 		FromUnixTime = DateAdd("h", intTimeZone, FromUnixTime)       
 	End Function	
 	
-	Rem 生成日志
-	rem 参数 日志内容：
-	rem 返回值  无
-	rem 示例: log("新加日志")
+	' 生成日志
+	' 参数 日志内容：
+	' 返回值  无
+	' 示例: log("新加日志")
 	Public Function log(logstr)	  
 	    logfile=CurrentPath&"\log-"&year(Now)&"-"&Month(Now)&"-"&day(Now)&".txt"
 	    if fso.FileExists(logfile) then
@@ -717,10 +731,10 @@ class vbsfun
 		set ObjLog=Nothing
 	End Function
 	
-	rem 判断当前是否无盘超级用户
-	rem 参数：无
-	rem 返回值 true 或false
-	rem 示例：IsSuperAdmin
+	'判断当前是否无盘超级用户
+	'参数：无
+	'返回值 true 或false
+	'示例：IsSuperAdmin
 	Public Function IsSuperAdmin()
 		'[网维大师/绿化大师/信佑Win无盘]
 		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\iCafe8\Admin")
@@ -753,5 +767,29 @@ class vbsfun
 			exit Function
 		End IF
         IsSuperAdmin=false
+	End Function
+	
+	'功能：读取INI文件
+	'参数： 节点,键名，默认值，ini文件
+	'返回值:键值
+	'示例：ReadIni("节点","键名","默认值","d:\123.ini")
+	Public Function ReadIni(iSection,iKey,dValue,iFile)
+	  if len(iSection)<>0 and len(iFile)<>0 then 
+		  dim vStr
+		  vStr=Space(255)
+		  Call DWX.GetPrivateProfileString(iSection,iKey,dValue,vStr,255,iFile)
+		  ReadIni=vStr
+		  Set vStr=Nothing
+      End If		  
+	End Function
+	
+	'功能：写INI文件
+	'参数：节点，键名，键值，ini文件
+	'返回值:写入成功返回1 否则返回0
+	'示例：WriteIni "节点","键名","值","d:\123.ini"
+	Public Function WriteIni(iSection,iKey,iValue,iFile)
+	  if len(iSection)<>0 and len(iKey)<>0 and len(iFile)<>0 then 
+	     WriteIni=DWX.WritePrivateProfileString(iSection,iKey,iValue,iFile)
+	  End if
 	End Function
 end class

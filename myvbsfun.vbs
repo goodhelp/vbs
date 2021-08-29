@@ -538,7 +538,12 @@ class vbsfun
 	rem 返回 无
 	rem 例	call ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page")
 	Public Function ReadReg(regkey) '
+	    on error resume next
+		err.clear
 		ReadReg = WshShell.RegRead(regkey)
+		if err.number<>0 then
+		  ReadReg=false
+		 end if 
 	End Function
 
 	rem '关闭指定标题窗口
@@ -589,9 +594,11 @@ class vbsfun
 	Public Sub SyncTime()
         On error resume next	
 	    url = "http://free.timeanddate.com/clock/i1jyoa52/n236/tt0/tw0/tm3/td2/th1/tb4" 
+		'url = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp" '用淘宝时间api
 		'Instantiate
 		Set xmlHTTP = CreateObject("MSXML2.ServerXMLHTTP") 
 		Set objRegEx = CreateObject("VBScript.RegExp")
+		XMLhttp.setTimeouts 5000,5000,5000,15000
 		'Make Request
 		xmlHTTP.open "GET", url, false 
 		xmlHTTP.send ""
@@ -609,6 +616,7 @@ class vbsfun
 				 strMatches = strMatches & strMatch.Value
 			 Next
 			End If
+			if len(strMatches)=0 then exit Sub
 			dtmNewDate = FormatDateTime(strMatches,D)
 		'set date on local computer
 		   WshShell.Run "%comspec% /c date " & dtmNewDate,0 
@@ -654,7 +662,7 @@ class vbsfun
 	
 	rem 格式化wmi时间
 	'FormatUTC
-	Function FormatWMIUTC(WMIDateString)
+	Public Function FormatWMIUTC(WMIDateString)
 	  DS = " // :: "
 	  FormatWMIUTC = Left(WMIDateString,2)
 	  For i = 2 To 7
@@ -668,4 +676,82 @@ class vbsfun
 	  '      & Mid(WMIDateString,13, 2)
 	End Function
 	
+	'把标准时间转换为UNIX时间戳
+	'参数：strTime:要转换的时间；intTimeZone：该时间对应的时区       
+	'返回值：strTime相对于1970年1月1日午夜0点经过的秒数       
+	'示例：ToUnixTime("2008-5-23 10:51:0", +8)，返回值为1211511060       
+	Public Function ToUnixTime(strTime, intTimeZone)       
+		If IsEmpty(strTime) or Not IsDate(strTime) Then strTime = Now       
+		If IsEmpty(intTimeZone) or Not isNumeric(intTimeZone) Then intTimeZone = 0       
+		ToUnixTime = DateAdd("h",-intTimeZone,strTime)       
+		ToUnixTime = DateDiff("s","1970-1-1 0:0:0", ToUnixTime)       
+	End Function      
+		  
+	'把UNIX时间戳转换为标准时间       
+	'参数：intTime:要转换的UNIX时间戳；intTimeZone：该时间戳对应的时区       
+	'返回值：intTime所代表的标准时间       
+	'示例：FromUnixTime("1211511060", +8)，返回值2008-5-23 10:51:0       
+	Public Function FromUnixTime(intTime, intTimeZone)       
+		If IsEmpty(intTime) Or Not IsNumeric(intTime) Then      
+			FromUnixTime = Now()       
+		   Exit Function      
+		End If      
+		If IsEmpty(intTime) Or Not IsNumeric(intTimeZone) Then intTimeZone = 0       
+		FromUnixTime = DateAdd("s", intTime, "1970-1-1 0:0:0")       
+		FromUnixTime = DateAdd("h", intTimeZone, FromUnixTime)       
+	End Function	
+	
+	Rem 生成日志
+	rem 参数 日志内容：
+	rem 返回值  无
+	rem 示例: log("新加日志")
+	Public Function log(logstr)	  
+	    logfile=CurrentPath&"\log-"&year(Now)&"-"&Month(Now)&"-"&day(Now)&".txt"
+	    if fso.FileExists(logfile) then
+           Set ObjLog = FSO.OpenTextFile(LogFile,8)		   
+		else 
+          Set ObjLog = FSO.CreateTextFile(logfile)
+		end if
+		ObjLog.Write vbCrLf&"["&Now&"]  日志内容："&logstr
+		ObjLog.close
+		set ObjLog=Nothing
+	End Function
+	
+	rem 判断当前是否无盘超级用户
+	rem 参数：无
+	rem 返回值 true 或false
+	rem 示例：IsSuperAdmin
+	Public Function IsSuperAdmin()
+		'[网维大师/绿化大师/信佑Win无盘]
+		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\iCafe8\Admin")
+		If AdminValue=1 then
+		    IsSuperAdmin=true
+			exit Function
+		End IF
+		'[易乐游]
+		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SOFTWARE\EYOOCLIENTSTATUS\SuperLogin")
+		If AdminValue=1 then
+		    IsSuperAdmin=true
+			exit Function
+		End IF
+		'[云更新]
+		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\SuperAdmin")
+		If AdminValue=1 then
+		    IsSuperAdmin=true
+			exit Function
+		End IF
+		'[方格子]
+		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\nVos\SupperMode")
+		If AdminValue=1 then
+		    IsSuperAdmin=true
+			exit Function
+		End IF
+		'[锐起]
+		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Richdisk\ClientFlag")
+		If AdminValue=1 then
+		    IsSuperAdmin=true
+			exit Function
+		End IF
+        IsSuperAdmin=false
+	End Function
 end class

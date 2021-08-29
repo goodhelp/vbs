@@ -11,6 +11,7 @@ class vbsfun
 		'-----windows api--- kernel32.dll---------- 
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
+		'https://www.jb51.net/shouce/vbs/vtoriVBScript.htm
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
 		DWX.Register "kernel32", "GetCommandLine", "r=s" 
         DWX.Register "kernel32", "GetPrivateProfileString","i=sssSus", "r=u" 

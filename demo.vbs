@@ -1,6 +1,6 @@
 rem 导入自定义类
 CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
-import(CurrentPath&"\myvbsfun.vbs")
+import(CurrentPath&"\MyVbsClass.vbs")
 set myfun=New vbsfun
 'call myfun.MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico") '创建桌面快捷方式
 'call myfun.MakeUrl("http://www.bnwin.com","百脑问",true) '收藏夹栏添加网址

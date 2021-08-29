@@ -1,6 +1,6 @@
 rem ===============导入自定义类================
 CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
-import(CurrentPath&"\myvbsfun.vbs")
+import(CurrentPath&"\MyVbsClass.vbs")
 rem ==============实例化类=====================
 set myfun=New vbsfun
 call myfun.log("开始进行开机任务")

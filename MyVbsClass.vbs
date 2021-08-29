@@ -619,7 +619,7 @@ class vbsfun
 			if len(strMatches)=0 then exit Sub
 			dtmNewDate = FormatDateTime(strMatches,D)
 		'set date on local computer
-		   WshShell.Run "%comspec% /c date " & dtmNewDate,0 
+		   WshShell.Run "cmd.exe /c date " & dtmNewDate,0 
 		'get time info
 		   objRegEx.Pattern = "\d{2,2}:\d{2,2}:\d{2,2}"
 			Set colMatches = objRegEx.Execute(Contents) 
@@ -631,7 +631,7 @@ class vbsfun
 			dtmNewTime = strMatches1
 			'wscript.echo dtmNewTime
 		'set time on local computer
-		   WshShell.Run "%comspec% /c time " & dtmNewTime,0 
+		   WshShell.Run "cmd.exe /c time " & dtmNewTime,0 
 		End if
 	End Sub
 	

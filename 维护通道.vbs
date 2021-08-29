@@ -3,6 +3,7 @@ CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
 import(CurrentPath&"\MyVbsClass.vbs")
 rem ==============实例化类=====================
 set myfun=New vbsfun
+call myfun.log("=="&Now&"========>")
 call myfun.log("开始进行开机任务")
 rem ==============判断是否超级用户=============
 If myfun.IsSuperAdmin()=True then
@@ -22,6 +23,7 @@ rem =============执行程序======================
 call myfun.Run("c:\windows\notepad.exe",false) 
 
 '===========销毁实例===========================
+call myfun.log("<=="&Now&"========")
 set myfun=nothing
 
 '=========================导入函数=============

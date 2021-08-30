@@ -31,6 +31,7 @@ class vbsfun
 		DWX.Register "user32", "SetWindowRgn","i=hpl","r=l"
 		DWX.Register "user32", "GetWindowThreadProcessId","i=hl","r=l"
 		DWX.Register "user32", "PostThreadMessage","i=uull","r=l"
+		DWX.Register "user32", "SendMessageTimeout","i=hlhhlll"
 		'--------------gdi32.dll-----------------------------
 		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"	
 		
@@ -49,7 +50,8 @@ class vbsfun
 	' 参数：快捷方式名称  程序地址 程序运行参数 图标地址 
 	' 返回 无
 	' 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
-	Public Function MakeLink(linkname,linkexe,linkparm,linkico)		
+	Public Function MakeLink(linkname,linkexe,linkparm,linkico)	
+		dim strDesktop,oShellLink
 		strDesktop = WshShell.SpecialFolders("Desktop") rem 特殊文件夹“桌面”
 		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname&".lnk")
 		oShellLink.TargetPath = linkexe  '可执行文件路径
@@ -73,6 +75,7 @@ class vbsfun
 	' 例 call MakeUrl("http://www.bnwin.com","百脑问",true)	
 	Public Function MakeUrl(url,urlname,link)
 		Const ADMINISTRATIVE_TOOLS = 6
+		dim objShell,objFolder,objFolderItem,strDesktopFld,objURLShortcut
 		Set objShell = CreateObject("Shell.Application")
 		Set objFolder = objShell.Namespace(ADMINISTRATIVE_TOOLS)
 		Set objFolderItem = objFolder.Self 		
@@ -89,7 +92,11 @@ class vbsfun
 	' 返回
 	' 例 call SetHomepage("https://www.baidu.com")
 	Public Function SetHomepage(url)
-		WshShell.RegWrite "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url	
+		WriteReg "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url,""	
+		WriteReg "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main\Start Page",url,""
+		WshShell.Run "cmd.exe /c gpupdate /force",0,true 
+		WshShell.Run "RunDll32.exe USER32.DLL,UpdatePerUserSystemParameters",0,false 
+		DWX.SendMessageTimeout &HFFFF,&H1A,0,0,0,1000,0
 	End Function
 	
 	' 根据exe取所在路径
@@ -216,7 +223,8 @@ class vbsfun
 	' 例 call Run("c:\abd\123.txt",false)	
 	Public Function Run(sPath,wait)
 	    on error resume next
-	    dim ExeName,IsRun,Exepath
+		err.clear
+	    dim ExeName,IsRun,Exepath,i
 	    ExeName = Split(sPath, " ")	'分隔带空格的路径
 		For i=0 to UBound(ExeName)
 		   if i=0 then
@@ -243,6 +251,7 @@ class vbsfun
 	' 返回true或false
 	' 例 call ping("192.168.0.1")
 	Public Function Ping(strComputer)
+		dim objWMIService,colItems
 		Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
 		Set colItems = objWMIService.ExecQuery _
 			("Select * from Win32_PingStatus " & _
@@ -277,6 +286,7 @@ class vbsfun
 	' 返回本机IP地址
 	' 例 call GetIP
 	Public Function GetIP
+	   dim ComputerName
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
 		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
@@ -296,6 +306,7 @@ class vbsfun
 	' 返回本机机器名称
 	' 例 call GetComputerName	
 	Public Function GetComputerName
+	   dim ComputerName
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
 		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
@@ -311,6 +322,7 @@ class vbsfun
 	' 返回  操作系统名
 	' 例 call GetOS	
 	Public Function GetOs
+	   dim ComputerName
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
 		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
@@ -332,6 +344,7 @@ class vbsfun
 	' 返回  操作系统位数 64位系统返回x64 32位系统返回x86
 	' 例 call X86orX64	
 	Public Function X86orX64
+	   dim ComputerName
 	   ComputerName="."
 		Dim objWMIService,colItems,objItem,objAddress
 		Set objWMIService = GetObject("winmgmts:\\" & ComputerName & "\root\cimv2")
@@ -354,7 +367,7 @@ class vbsfun
 	' 例生成文本文件 call ReadBinary("c:\windows\notepad.exe","d:\123.txt")
 	Public Function ReadBinary(FileName,TxtFile)
 		Const adTypeBinary = 1
-		Dim stream, xmldom, node
+		Dim stream, xmldom, node,f
 		Set xmldom = CreateObject("Microsoft.XMLDOM")
 		Set node = xmldom.CreateElement("binary")
 		node.DataType = "bin.hex"
@@ -411,6 +424,7 @@ class vbsfun
 	' 返回 无
 	' 例 call DownFile("https://dl.360safe.com/360sd/360sd_x64_std_5.0.0.8183C.exe","d:\360sd.exe")
 	Public Function DownFile(UrlFile,SaveFile)
+	    dim xPost,sGet
 		Set xPost=CreateObject("Microsoft.XMLHTTP")
 		xPost.Open "get",UrlFile,0
 		xPost.Send()
@@ -451,14 +465,21 @@ class vbsfun
 			WshShell.run """"&batFile&"""",0
 		end if
 	End Function
+	
+	' 运行dos命令
+	' 参数 dos命令
+	' 返回 无
+	' 例 Call RunCmd(batstr)
+	Public Function RunCmd(batstr)
+		WshShell.run "cmd.exe /c "&batstr,0
+	End Function
 
     ' 导入vbs文件 
     ' 参数 vbs文件
     ' 返回 无
     ' 例 call import("d:\abc.vbs")
     Public Sub import(sFile)
-        Dim oFile
-        Dim sCode
+        Dim oFile,sCode
 		if FSO.fileExists(sFile) then 
 			Set oFile= FSO.OpenTextFile(sFile, 1)
 			With oFile
@@ -485,7 +506,7 @@ class vbsfun
 	' 返回 进程正在运行，返回true
 	' 例 Call IsProcess("qq.exe")	
 	Public Function IsProcess(ExeName)
-		Dim WMI, Obj, Objs,i
+		Dim WMI, Obj, Objs
 		IsProcess = False
 		Set WMI = GetObject("WinMgmts:")
 		Set Objs = WMI.InstancesOf("Win32_Process")
@@ -540,7 +561,8 @@ class vbsfun
 	
 	' 正则匹配
 	
-	Public Function RegExpTest(patrn, strng)  
+	Public Function RegExpTest(patrn, strng) 
+      dim re,Matches	
 	  Set re = New RegExp  
 	  re.Pattern = patrn  
 	  re.IgnoreCase = True 
@@ -555,11 +577,16 @@ class vbsfun
 	' 返回 无
 	' 例	call WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")
 	Public Sub WriteReg(regkey, value, typeName) 
+	    on error resume next
+		err.clear
 		If typeName = "" Then
 			WshShell.RegWrite regkey, value
 		Else
 			WshShell.RegWrite regkey, value, typeName
 		End If
+		if err.number<>0 then
+		  log("写注册表错误："&Err.Source&Err.Description&Err.Number)
+		end if		
 	End Sub
 
 	' '读取注册表，搜索key，返回所在路径
@@ -573,9 +600,9 @@ class vbsfun
 		if err.number<>0 then
 		  ReadReg=false
 		 end if 
-		if err.number<>0 then
-		  log("读取注册表错误："&Err.Source&Err.Description&Err.Number)
-		end if
+		'if err.number<>0 then
+		'  log("读取注册表错误："&Err.Source&Err.Description&Err.Number)
+		'end if
 	End Function
 
 	' '关闭指定标题窗口
@@ -583,6 +610,7 @@ class vbsfun
 	' 返回 无
 	' 例	call KillWindow("","无标题")
 	Public Function KillWindow(classname,winName)
+	    dim hwnd
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
@@ -601,6 +629,7 @@ class vbsfun
 	' 返回 无
 	' 例	call HideWindow("Notepad","")
 	Public Function HideWindow(classname,winName)
+	    dim hwnd,hrgn
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
@@ -616,6 +645,7 @@ class vbsfun
 	' 返回 无
 	' 例	call KillThread("Notepad","")
 	Public Function KillThread(classname,winName)
+	    dim hwnd,tid
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
@@ -630,7 +660,9 @@ class vbsfun
 	' 返回 
 	' 例 call SyncTime
 	Public Sub SyncTime()
-        On error resume next	
+        On error resume next
+		err.clear
+        dim url,xmlHTTP,objRegEx,Contents,colMatches,strMatch,strMatches,dtmNewDate,strMatches1,dtmNewTime	
 	    url = "http://free.timeanddate.com/clock/i1jyoa52/n236/tt0/tw0/tm3/td2/th1/tb4" 
 		'url = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp" '用淘宝时间api
 		'Instantiate
@@ -681,6 +713,7 @@ class vbsfun
 	' 返回 
 	' 例 call GetSysRunTime
 	Public Function GetSysRunTime()
+	    dim strComputer,objWMIService,colLoggedEvents,objEvent,Flag
 		strComputer = "."
 		Set objWMIService = GetObject("winmgmts:" _
 		& "{impersonationLevel=impersonate}!\\" _
@@ -704,6 +737,7 @@ class vbsfun
 	' 格式化wmi时间
 	'FormatUTC
 	Public Function FormatWMIUTC(WMIDateString)
+	  dim DS,i
 	  DS = " // :: "
 	  FormatWMIUTC = Left(WMIDateString,2)
 	  For i = 2 To 7
@@ -746,7 +780,8 @@ class vbsfun
 	' 参数 日志内容：
 	' 返回值  无
 	' 示例: log("新加日志")
-	Public Function log(logstr)	  
+	Public Function log(logstr)	
+        dim logfile	,ObjLog
 	    logfile=CurrentPath&"\log-"&year(Now)&"-"&Month(Now)&"-"&day(Now)&".txt"
 	    if fso.FileExists(logfile) then
            Set ObjLog = FSO.OpenTextFile(LogFile,8)		   
@@ -764,6 +799,7 @@ class vbsfun
 	'示例：IsSuperAdmin
 	Public Function IsSuperAdmin()
 		'[网维大师/绿化大师/信佑Win无盘]
+		dim AdminValue
 		AdminValue=ReadReg("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\iCafe8\Admin")
 		If AdminValue=1 then
 		    IsSuperAdmin=true
@@ -819,4 +855,18 @@ class vbsfun
 	     WriteIni=DWX.WritePrivateProfileString(iSection,iKey,iValue,iFile)
 	  End if
 	End Function
+	
+	'功能：创建目录链接
+	'参数：新目录 源目录
+	'返回值:无
+	'示例  CreatLink("C:\Program Files\Adobe\Photoshop","D:\Program Files\Adobe\Photoshop") '把D盘photoshop映射到C盘,实际程序文件存放在D盘
+	Public Function CreatLink(NewDir,OldDir)
+	  if FSO.FolderExists(NewDir) then 
+	     WshShell.run "cmd.exe /c rd "& NewDir,,false
+	  end if
+	  if FSO.FolderExists(OldDir) then
+	     WshShell.run "cmd.exe /c mklink /d """& NewDir & """ """  & OldDir&"""" ,,false
+	  End if
+	End Function
+	
 end class

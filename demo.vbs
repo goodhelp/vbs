@@ -1,20 +1,21 @@
 rem 导入自定义类
+dim CurrentPath,myfun
 CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
 import(CurrentPath&"\MyVbsClass.vbs")
 set myfun=New vbsfun
 'call myfun.MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico") '创建桌面快捷方式
 'call myfun.MakeUrl("http://www.bnwin.com","百脑问",true) '收藏夹栏添加网址
-'call myfun.SetHomepage("http://www.bnwin.com") '设置ie主页
-'call myfun.GetExePath("C:\Program Files\Internet Explorer\iexplore.exe") '根据路径取目录
-'call myfun.IsExitFile("c:\abc.txt") '判断文件是否存在
-'call myfun.IsExitDir("c:\abc",true) '判断目录是否存在
+call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
+'msgbox myfun.GetExePath("C:\Program Files\Internet Explorer\iexplore.exe") '根据路径取目录
+'msgbox myfun.IsExitFile("c:\abc.txt") '判断文件是否存在
+'msgbox myfun.IsExitDir("c:\abc",true) '判断目录是否存在
 'call myfun.MyCreateFolder("c:\abc\1233\dd")  '创建目录可多级
 'call myfun.XCopy("D:\dump","d:\456",true) '拷目录 多级
 'call myfun.CopyFile("C:\Windows\win.ini","d:\323\aaa.txt",true)  '拷贝文件
 'call myfun.DelFile("c:\abd\123.txt")  '删除文件
 'call myfun.DelDir("c:\abd\")  '删除目录
-'Call myfun.Run("""C:\Program Files (x86)\Internet Explorer\iexplore.exe""  http://www.bnwin.com",false)  '路径带有空格，要用引号把空格路径括起，会检测文件是否存在
-'call myfun.ping("192.168.0.1")  'ping是否在线
+'Call myfun.Run("""C:\Program Files (x86)\Internet Explorer\iexplore.exe""  http://www.bnwin.com",false)  '路径带有空格，要用引号把空格路径括起，会检测文件是否存在，不能用于执行dos命令
+'msgbox myfun.ping("192.168.0.1")  'ping是否在线
 'MsgBox myfun.GetMac   '取得网卡mac地址
 'MsgBox myfun.GetIP   '取得本机ip地址
 'MsgBox myfun.GetComputerName   '取得机器名
@@ -25,11 +26,12 @@ set myfun=New vbsfun
 'call myfun.Sleep(5)  '延时5秒
 'call myfun.ImportReg(".\reg.reg")  '导入注册表
 'call myfun.RunBat(".\test.bat")  '运行批处理文件
+'myfun.Runcmd "dir c:\ >c:\1.txt" '运行dos命令
 'call myfun.import("d:\abc.vbs")  '导入vbs文件
 'call myfun.CloseProcess("SunloginRemote.exe")  '关闭指定进程
 'call myfun.IsProcess("qq.exe")	 '检查指定进程是否存在
 'call myfun.IsProcessEx("qq.exe|notepad.exe")  '指定指定列表进程是否存在
-'call myfun.CloseProcessEx("qq.exe｜wechat.exe")  '结束进程列表
+'call myfun.CloseProcessEx("qq.exe|wechat.exe")  '结束进程列表
 'call myfun.RegExpTest("sdf|456","123456789")  '正则判断是否存在指定内容
 'call myfun.KillWindow("","计算机")  '关闭指定类名或标题的窗口
 'call myfun.WriteReg("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\MAIN\Start Page","https://www.baidu.com","")  '写注册表值
@@ -45,6 +47,7 @@ set myfun=New vbsfun
 'msgbox myfun.ToUnixTime(now, 8)  '把当前时间转成unix时间
 'myfun.WriteIni "节点","键名","值","d:\123.ini"   '写INI文件
 'msgbox myfun.ReadIni("节点","键名","默认值","d:\123.ini") '读ini文件
+'call myfun.CreatLink("d:\pg","C:\Program Files (x86)")  ''把C盘程序目录映射到D盘pg目录,访问D:\pg相当于访问C:\Program Files (x86)内容
 
 dim cptname
 cptname=myfun.GetComputerName

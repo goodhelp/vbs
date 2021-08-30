@@ -27,10 +27,7 @@ For i=1 to 10
 	   IF instr(GroupName,CptName)<>0 then
 	       call myfun.ImportReg(CurrentPath&"\"&i&"\reg.reg") 
 	       call myfun.RunBat(CurrentPath&"\"&i&"\run.bat")  
-		   'call myfun.Run(CurrentPath&"\"&i&"\run.vbs "&CurrentPath,false) 'run函数会判断文件是否存在，加了参数，会判断文件不存在  
-		   if myfun.IsExitFile(CurrentPath&"\"&i&"\run.vbs") then 
-		      myfun.WshShell.run CurrentPath&"\"&i&"\run.vbs """&CurrentPath&"""",,false
-		   end if
+		   call myfun.Run(CurrentPath&"\"&i&"\run.vbs "&CurrentPath,false) '路径不带空格，带空格使用RunEx
 		   call myfun.log("完成["&i&"]分组批处理和导分组注册表")
 	   end if	   
 	End IF
@@ -50,6 +47,14 @@ call myfun.log("程序执行完成")
 rem =============进程查杀======================
 call myfun.CloseProcessEx("x-panda.exe|lol_monitor2.exe|pubg_monitor2.exe|khardware64_v54.exe")
 call myfun.log("完成进程查杀")
+rem =============开始执行循环任务==============
+while(true)
+    call myfun.sleep(2)
+    call myfun.CloseProcessEx("x-panda.exe|lol_monitor2.exe|pubg_monitor2.exe|khardware64_v54.exe|notepad.exe") '结束进程
+    call myfun.KillWindow("","计算机") '关闭窗口
+	'call myfun.HideWindow("","") '隐藏窗口
+	'call myfun.KillThread("","")  '按窗口中止线程
+Wend
 '===========销毁实例===========================
 call myfun.log("<=="&Now&"========")
 set myfun=nothing

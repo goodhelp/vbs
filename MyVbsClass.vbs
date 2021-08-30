@@ -210,15 +210,25 @@ class vbsfun
 		if FSO.FolderExists(sPath) then FSO.DeleteFolder sPath
 	End Function
 	
-	' 运行程序
+	' 运行程序 路径不带空格，空格后会做为运行参数
 	' 参数 程序 是否等待结束
 	' 返回 无
 	' 例 call Run("c:\abd\123.txt",false)	
 	Public Function Run(sPath,wait)
-	    if FSO.FileExists(sPath) then
-			WshShell.run """"&sPath&"""",,wait
+	    ExeName = Split(sPath, " ")	
+	    if FSO.FileExists(ExeName(0)) then
+			WshShell.run ExeName(0),,wait
 		end if
 	End Function
+
+	' 运行程序路径带有空格的程序 不检测程序是否存在
+	' 参数 程序 是否等待结束
+	' 返回 无
+	' 例 call RunEx("c:\abd\123.txt",false)	
+	Public Function RunEx(sPath,wait)
+	    on error resume next
+		WshShell.run sPath,,wait
+	End Function	
 	
 	' ping机器是否在线
 	' 参数 IP地址 
@@ -512,10 +522,12 @@ class vbsfun
 		ProcessName = Split(ExeName, "|")
 		For i=0 to UBound(ProcessName)
 		    if IsProcess(ProcessName(i)) then  '如果进程存在
-			  CmdCode=CmdCode & " /im " & ProcessName(i)
-			  WshShell.run "Taskkill /f" & CmdCode,0
+			  CmdCode=CmdCode & " /im " & ProcessName(i)			  
 			end if
-		Next		
+		Next
+        IF len(CmdCode)>0 then
+           WshShell.run "Taskkill /f" & CmdCode,0
+        End If		   
 	End Sub	
 	
 	' 正则匹配

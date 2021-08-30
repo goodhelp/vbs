@@ -13,8 +13,7 @@ set myfun=New vbsfun
 'call myfun.CopyFile("C:\Windows\win.ini","d:\323\aaa.txt",true)  '拷贝文件
 'call myfun.DelFile("c:\abd\123.txt")  '删除文件
 'call myfun.DelDir("c:\abd\")  '删除目录
-'call myfun.Run("c:\windows\notepad.exe",false)	 '运行程序 会检测文件是否存在
-'Call myfun.RunEx("""C:\Program Files (x86)\Internet Explorer\iexplore.exe""  http://www.bnwin.com",false)  '路径带有空格，并用引号把空格路径括起，不检测文件是否存在
+Call myfun.Run("""C:\Program Files (x86)\Internet Explorer\iexplore.exe""  http://www.bnwin.com",false)  '路径带有空格，要用引号把空格路径括起，会检测文件是否存在
 'call myfun.ping("192.168.0.1")  'ping是否在线
 'MsgBox myfun.GetMac   '取得网卡mac地址
 'MsgBox myfun.GetIP   '取得本机ip地址

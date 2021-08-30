@@ -210,25 +210,33 @@ class vbsfun
 		if FSO.FolderExists(sPath) then FSO.DeleteFolder sPath
 	End Function
 	
-	' 运行程序 路径不带空格，空格后会做为运行参数
+	' 运行程序 路径带空格，需要用双引号括起路径
 	' 参数 程序 是否等待结束
 	' 返回 无
 	' 例 call Run("c:\abd\123.txt",false)	
 	Public Function Run(sPath,wait)
-	    ExeName = Split(sPath, " ")	
-	    if FSO.FileExists(ExeName(0)) then
-			WshShell.run ExeName(0),,wait
+	    on error resume next
+	    dim ExeName,IsRun,Exepath
+	    ExeName = Split(sPath, " ")	'分隔带空格的路径
+		For i=0 to UBound(ExeName)
+		   if i=0 then
+		     Exepath=ExeName(i)
+		   else
+		     Exepath=Exepath&" "&ExeName(i) '重新组合成带空格的路径
+		   end if
+		   Exepath=Replace(Exepath,"""","")  
+           if FSO.FileExists(Exepath) then
+		     IsRun=True
+			 exit for
+		   end if
+        next
+        if IsRun then		
+		   WshShell.run sPath,,wait
+		end if
+		if err.number<>0 then
+		  log("执行Run错误："&Err.Source&Err.Description&Err.Number)
 		end if
 	End Function
-
-	' 运行程序路径带有空格的程序 不检测程序是否存在
-	' 参数 程序 是否等待结束
-	' 返回 无
-	' 例 call RunEx("c:\abd\123.txt",false)	
-	Public Function RunEx(sPath,wait)
-	    on error resume next
-		WshShell.run sPath,,wait
-	End Function	
 	
 	' ping机器是否在线
 	' 参数 IP地址 
@@ -565,6 +573,9 @@ class vbsfun
 		if err.number<>0 then
 		  ReadReg=false
 		 end if 
+		if err.number<>0 then
+		  log("读取注册表错误："&Err.Source&Err.Description&Err.Number)
+		end if
 	End Function
 
 	' '关闭指定标题窗口
@@ -660,6 +671,9 @@ class vbsfun
 		'set time on local computer
 		   WshShell.Run "cmd.exe /c time " & dtmNewTime,0 
 		End if
+		if err.number<>0 then
+		  log("获取网络时间错误："&Err.Source&Err.Description&Err.Number)
+		end if
 	End Sub
 	
 	' 取得系统开机时间 关机时间 返回时间较长，可用于学习查询系统日志

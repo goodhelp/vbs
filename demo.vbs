@@ -5,7 +5,7 @@ import(CurrentPath&"\MyVbsClass.vbs")
 set myfun=New vbsfun
 'call myfun.MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico") '创建桌面快捷方式
 'call myfun.MakeUrl("http://www.bnwin.com","百脑问",true) '收藏夹栏添加网址
-call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
+'call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
 'msgbox myfun.GetExePath("C:\Program Files\Internet Explorer\iexplore.exe") '根据路径取目录
 'msgbox myfun.IsExitFile("c:\abc.txt") '判断文件是否存在
 'msgbox myfun.IsExitDir("c:\abc",true) '判断目录是否存在
@@ -48,6 +48,7 @@ call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
 'myfun.WriteIni "节点","键名","值","d:\123.ini"   '写INI文件
 'msgbox myfun.ReadIni("节点","键名","默认值","d:\123.ini") '读ini文件
 'call myfun.CreatLink("d:\pg","C:\Program Files (x86)")  ''把C盘程序目录映射到D盘pg目录,访问D:\pg相当于访问C:\Program Files (x86)内容
+msgbox "系统运行了："&myfun.GetOsRunTime&"分钟"
 
 dim cptname
 cptname=myfun.GetComputerName

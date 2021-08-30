@@ -16,6 +16,7 @@ class vbsfun
 		DWX.Register "kernel32", "GetCommandLine", "r=s" 
         DWX.Register "kernel32", "GetPrivateProfileString","i=sssSus", "r=u" 
 		DWX.Register "kernel32", "WritePrivateProfileString","i=ssss", "r=l" 
+		DWX.Register "kernel32", "GetTickCount","r=l"
 		'-----windows api--- user32.dll----------
 		DWX.Register "user32", "EnumWindows", "i=ph" 
 		DWX.Register "user32", "GetWindowTextW", "i=hpl"
@@ -94,7 +95,7 @@ class vbsfun
 	Public Function SetHomepage(url)
 		WriteReg "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url,""	
 		WriteReg "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main\Start Page",url,""
-		WshShell.Run "cmd.exe /c gpupdate /force",0,true 
+		WshShell.Run "cmd.exe /c gpupdate /force",0,false 
 		WshShell.Run "RunDll32.exe USER32.DLL,UpdatePerUserSystemParameters",0,false 
 		DWX.SendMessageTimeout &HFFFF,&H1A,0,0,0,1000,0
 	End Function
@@ -733,6 +734,16 @@ class vbsfun
 		  End If
 		Next
     End Function
+	
+	'返回系统运行的时间 分钟
+	'参数 
+	'返回 分钟
+	'例 GetOsRunTime()
+	Public Function GetOsRunTime()
+	   dim r
+	   r=DWX.GetTickCount
+	   GetOsRunTime=int(r/1000/60)
+	End Function
 	
 	' 格式化wmi时间
 	'FormatUTC

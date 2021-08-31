@@ -43,11 +43,16 @@ if myfun.IsExitFile(vbsPath&"\Runpg.vbs") then
     import(vbsPath&"\Runpg.vbs")
 end if
 rem =============进程查杀======================
-Plist="x-panda.exe|lol_monitor2.exe|pubg_monitor2.exe|khardware64_v54.exe"
-call myfun.CloseProcessEx(Plist)
+GroupIni=vbsPath&"\default.ini"
+For g=1 to 20
+    Plist=myfun.ReadIni("查杀程序",CStr(g),"",GroupIni)
+	if len(Plist)=0 then exit for
+	call myfun.CloseProcess(Plist)
+Next
 call myfun.log("完成进程查杀")
 rem =============开始执行循环任务==============
 if myfun.IsExitFile(vbsPath&"\taskloop.vbs") then
+    call myfun.log("开始循环任务")
     import(vbsPath&"\taskloop.vbs")
 end if
 '===========销毁实例===========================

@@ -5,7 +5,7 @@ import(createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPat
 set myfun=New vbsfun
 'call myfun.MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico") '创建桌面快捷方式
 'call myfun.MakeUrl("http://www.bnwin.com","百脑问",true) '收藏夹栏添加网址
-call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
+'call myfun.SetHomepage("https://www.baidu.com") '设置ie主页
 'msgbox myfun.GetExePath("C:\Program Files\Internet Explorer\iexplore.exe") '根据路径取目录
 'msgbox myfun.IsExitFile("c:\abc.txt") '判断文件是否存在
 'msgbox myfun.IsExitDir("c:\abc",true) '判断目录是否存在

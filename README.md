@@ -18,3 +18,5 @@ demo为示例代码，
 1.  把lib目录复制一份
 2.  新建一目录，引用lib中的MyVbsClass.vbs即可使用其全部函数，引用方法见demo\demo.vbs
 
+仅适用于64位系统
+

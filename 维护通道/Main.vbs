@@ -1,7 +1,7 @@
 rem ===============导入自定义类================
-dim CurrentPath
-CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
-import(CurrentPath&"\MyVbsClass.vbs")
+dim vbsPath
+vbsPath = createobject("Scripting.FileSystemObject").GetFile(Wscript.ScriptFullName).ParentFolder.Path'脚本当前目录
+import(createobject("Scripting.FileSystemObject").GetParentFolderName(vbsPath)&"\lib\MyVbsClass.vbs")
 rem ==============实例化类=====================
 dim myfun
 set myfun=New vbsfun
@@ -16,56 +16,44 @@ call myfun.log("结束判断是否超级用户")
 rem ==============前期程序=====================
 call myfun.SyncTime '同步时间
 call myfun.log("完成同步时间")
-call myfun.ImportReg(CurrentPath&"\reg.reg")  '自动导入注册表
+call myfun.ImportReg(vbsPath&"\reg.reg")  '自动导入注册表
 call myfun.log("完成注册表导入")
-call myfun.RunBat(CurrentPath&"\run.bat")  '执行批处理
+call myfun.RunBat(vbsPath&"\run.bat")  '执行批处理
 call myfun.log("批处理执行完成")
 rem ==============分组任务=====================
 dim CptName,g,GroupIni,GroupName,Plist
 CptName=myfun.GetComputerName '取得机器名
 For g=1 to 10
-    GroupIni=CurrentPath&"\"&g&"\config.ini"	
+    GroupIni=vbsPath&"\"&g&"\config.ini"	
 	IF myfun.IsExitFile(GroupIni) then
 	   GroupName=myfun.ReadIni("设置","分组","",GroupIni) 	   
 	   IF instr(GroupName,CptName)<>0 then
-	       call myfun.ImportReg(CurrentPath&"\"&g&"\reg.reg") 
-	       call myfun.RunBat(CurrentPath&"\"&g&"\run.bat")  
-		   call myfun.Run(CurrentPath&"\"&g&"\run.vbs "&CurrentPath,false) '路径不带空格，带空格整个路径使用双引号括起
+	       call myfun.ImportReg(vbsPath&"\"&g&"\reg.reg") 
+	       call myfun.RunBat(vbsPath&"\"&g&"\run.bat")  
+		   if myfun.IsExitFile(vbsPath&"\"&g&"\run.vbs") then
+		      import(vbsPath&"\"&g&"\run.vbs")
+		   end if
 		   call myfun.log("完成["&g&"]分组批处理和导分组注册表")
 	   end if	   
 	End IF
 Next
 call myfun.log("分组任务执行完成")
 rem =============执行程序======================
-call myfun.Run("I:\常用软件\QQwb\SecureIdentify.exe",false) 
-call myfun.run("I:\常用软件\360极速浏览器\360Chrome\Chrome\Application\360chrome.exe --make-default-browser",false)
-call myfun.Run("G:\常用软件\MyBox\tools\killproc\AutoSound.exe 0 100 100 30",false) 
-call myfun.Run("G:\常用软件\小妖客户端\vxyClient.exe",false) 
-call myfun.sleep(10)
-call myfun.Run("G:\常用软件\MyBox\tools\killproc\Monitor.exe 0",false) 
-call myfun.Run("G:\常用软件\MyBox\tools\killproc\kille\refreshreg.exe",false) 
-call myfun.sleep(10)
-call myfun.Run("G:\常用软件\MyBox\tools\killproc\KillProc.exe",false) 
-call myfun.log("程序执行完成")
+if myfun.IsExitFile(vbsPath&"\Runpg.vbs") then
+    import(vbsPath&"\Runpg.vbs")
+end if
 rem =============进程查杀======================
 Plist="x-panda.exe|lol_monitor2.exe|pubg_monitor2.exe|khardware64_v54.exe"
 call myfun.CloseProcessEx(Plist)
 call myfun.log("完成进程查杀")
 rem =============开始执行循环任务==============
-call TaskLoop(Plist,false)
+if myfun.IsExitFile(vbsPath&"\taskloop.vbs") then
+    import(vbsPath&"\taskloop.vbs")
+end if
 '===========销毁实例===========================
 call myfun.log("<=="&Now&"========")
 set myfun=nothing
 
-Sub TaskLoop(list,run) '循环任务列表
-	while(run)
-		call myfun.sleep(2)
-		call myfun.CloseProcessEx(list) '结束进程
-		'call myfun.KillWindow("","计算机") '关闭窗口
-		'call myfun.HideWindow("","") '隐藏窗口
-		'call myfun.KillThread("","")  '按窗口中止线程
-	Wend
-End Sub
 
 '=========================导入函数=============
 Sub import(sFile)

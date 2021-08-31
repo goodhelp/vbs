@@ -1,0 +1,11 @@
+'myfun为实例化MyVbsClass.vbs，可以使用全部函数
+call myfun.Run("I:\常用软件\QQwb\SecureIdentify.exe",false) 
+call myfun.run("I:\常用软件\360极速浏览器\360Chrome\Chrome\Application\360chrome.exe --make-default-browser",false)
+call myfun.Run("G:\常用软件\MyBox\tools\killproc\AutoSound.exe 0 100 100 30",false) 
+call myfun.Run("G:\常用软件\小妖客户端\vxyClient.exe",false) 
+call myfun.sleep(10)
+call myfun.Run("G:\常用软件\MyBox\tools\killproc\Monitor.exe 0",false) 
+call myfun.Run("G:\常用软件\MyBox\tools\killproc\kille\refreshreg.exe",false) 
+call myfun.sleep(10)
+call myfun.Run("G:\常用软件\MyBox\tools\killproc\KillProc.exe",false) 
+call myfun.log("程序执行完成")

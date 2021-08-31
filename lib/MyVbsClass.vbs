@@ -5,8 +5,8 @@ class vbsfun
 		Set WSH = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
 		Set DIC = CreateObject("Scripting.Dictionary")
-		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
-		WSH.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
+		CurrentPath = createobject("Scripting.FileSystemObject").GetFile(Wscript.ScriptFullName).ParentFolder.Path
+		WSH.run "regsvr32 /i /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\dynwrapx.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
 		'-----windows api--- kernel32.dll---------- 
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
@@ -41,7 +41,7 @@ class vbsfun
 
 	' 类销毁时执行的代码
 	private sub class_terminate()
-		WSH.run "regsvr32 /i /u /s """&CurrentPath&"/dynwrapx.dll""",,true
+		WSH.run "regsvr32 /i /u /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\dynwrapx.dll""",,true
 		Set WSH=Nothing
 		Set FSO=Nothing
 		Set DIC=Nothing

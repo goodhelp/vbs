@@ -1,16 +1,17 @@
 class vbsfun
 	' 类实例化时执行的代码
-	Public WshShell,FSO,DWX,CurrentPath
+	Public WSH,FSO,DWX,CurrentPath
 	private sub Class_Initialize()
-		Set WshShell = WScript.CreateObject("WScript.Shell")
+		Set WSH = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
-		Set Dict = CreateObject("Scripting.Dictionary")
+		Set DIC = CreateObject("Scripting.Dictionary")
 		CurrentPath = createobject("Scripting.FileSystemObject").GetFolder(".").Path
-		WshShell.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
+		WSH.run "regsvr32 /i /s """&CurrentPath&"/dynwrapx.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
 		'-----windows api--- kernel32.dll---------- 
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
+		'https://blog.csdn.net/yxp_xa/article/details/73320759
 		'https://www.jb51.net/shouce/vbs/vtoriVBScript.htm
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
 		DWX.Register "kernel32", "GetCommandLine", "r=s" 
@@ -40,10 +41,10 @@ class vbsfun
 
 	' 类销毁时执行的代码
 	private sub class_terminate()
-		WshShell.run "regsvr32 /i /u /s """&CurrentPath&"/dynwrapx.dll""",,true
-		Set WshShell=Nothing
+		WSH.run "regsvr32 /i /u /s """&CurrentPath&"/dynwrapx.dll""",,true
+		Set WSH=Nothing
 		Set FSO=Nothing
-		Set Dict=Nothing
+		Set DIC=Nothing
 		Set DWX=Nothing
 	end sub
 	
@@ -53,8 +54,8 @@ class vbsfun
 	' 例 call MakeLink("罗技鼠标设置","G:\常用软件\罗技鼠标游戏驱动\Rungame.exe","","G:\常用软件\罗技鼠标游戏驱动\48731.ico")
 	Public Function MakeLink(linkname,linkexe,linkparm,linkico)	
 		dim strDesktop,oShellLink
-		strDesktop = WshShell.SpecialFolders("Desktop") rem 特殊文件夹“桌面”
-		set oShellLink = WshShell.CreateShortcut(strDesktop &"\"& linkname&".lnk")
+		strDesktop = WSH.SpecialFolders("Desktop") rem 特殊文件夹“桌面”
+		set oShellLink = WSH.CreateShortcut(strDesktop &"\"& linkname&".lnk")
 		oShellLink.TargetPath = linkexe  '可执行文件路径
 		oShellLink.Arguments = linkparm '程序的参数
 		oShellLink.WindowStyle = 1 '参数1默认窗口激活，参数3最大化激活，参数7最小化
@@ -82,7 +83,7 @@ class vbsfun
 		Set objFolderItem = objFolder.Self 		
 		strDesktopFld = objFolderItem.Path
 		if link then strDesktopFld=strDesktopFld&"\links"
-		Set objURLShortcut = WshShell.CreateShortcut(strDesktopFld & "\"&urlname&".url")
+		Set objURLShortcut = WSH.CreateShortcut(strDesktopFld & "\"&urlname&".url")
 		objURLShortcut.TargetPath = url
 		objURLShortcut.Save
 		Set objShell=Nothing
@@ -95,8 +96,8 @@ class vbsfun
 	Public Function SetHomepage(url)
 		WriteReg "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\Start Page",url,""	
 		WriteReg "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main\Start Page",url,""
-		WshShell.Run "cmd.exe /c gpupdate /force",0,false 
-		WshShell.Run "RunDll32.exe USER32.DLL,UpdatePerUserSystemParameters",0,false 
+		WSH.Run "cmd.exe /c gpupdate /force",0,false 
+		WSH.Run "RunDll32.exe USER32.DLL,UpdatePerUserSystemParameters",0,false 
 		DWX.SendMessageTimeout &HFFFF,&H1A,0,0,0,1000,0
 	End Function
 	
@@ -240,7 +241,7 @@ class vbsfun
 		   end if
         next
         if IsRun then		
-		   WshShell.run sPath,,wait
+		   WSH.run sPath,,wait
 		end if
 		if err.number<>0 then
 		  log("执行Run错误："&Err.Source&Err.Description&Err.Number)
@@ -453,7 +454,7 @@ class vbsfun
 	' 例 call ImportReg("d:\1.reg")
 	Public Function ImportReg(regFile)
 	    if FSO.FileExists(regFile) then
-			WshShell.run "regedit.exe /s """&regFile&"""",0
+			WSH.run "regedit.exe /s """&regFile&"""",0
 		end if
 	End Function	
 	
@@ -463,7 +464,7 @@ class vbsfun
 	' 例 Call RunBat(batFile)
 	Public Function RunBat(batFile)
 	    if FSO.FileExists(batFile) then
-			WshShell.run """"&batFile&"""",0
+			WSH.run """"&batFile&"""",0
 		end if
 	End Function
 	
@@ -472,7 +473,7 @@ class vbsfun
 	' 返回 无
 	' 例 Call RunCmd(batstr)
 	Public Function RunCmd(batstr)
-		WshShell.run "cmd.exe /c "&batstr,0
+		WSH.run "cmd.exe /c "&batstr,0
 	End Function
 
     ' 导入vbs文件 
@@ -498,7 +499,7 @@ class vbsfun
 	' 例 call CloseProcess("winrar.exe")
 	Public Sub CloseProcess(ExeName)
 	    if IsProcess(ExeName) then
-		  WshShell.run "Taskkill /f /im " & ExeName,0
+		  WSH.run "Taskkill /f /im " & ExeName,0
 		end if
 	End Sub
 
@@ -556,7 +557,7 @@ class vbsfun
 			end if
 		Next
         IF len(CmdCode)>0 then
-           WshShell.run "Taskkill /f" & CmdCode,0
+           WSH.run "Taskkill /f" & CmdCode,0
         End If		   
 	End Sub	
 	
@@ -581,9 +582,9 @@ class vbsfun
 	    on error resume next
 		err.clear
 		If typeName = "" Then
-			WshShell.RegWrite regkey, value
+			WSH.RegWrite regkey, value
 		Else
-			WshShell.RegWrite regkey, value, typeName
+			WSH.RegWrite regkey, value, typeName
 		End If
 		if err.number<>0 then
 		  log("写注册表错误："&Err.Source&Err.Description&Err.Number)
@@ -597,7 +598,7 @@ class vbsfun
 	Public Function ReadReg(regkey) '
 	    on error resume next
 		err.clear
-		ReadReg = WshShell.RegRead(regkey)
+		ReadReg = WSH.RegRead(regkey)
 		if err.number<>0 then
 		  ReadReg=false
 		 end if 
@@ -621,8 +622,8 @@ class vbsfun
 		'DWX.PostMessage hwnd, &H82, 0, 0 '销毁窗口
 		end if
 	   'dim rcSuccess  '使用wscript发送alt+F4
-	   'rcSuccess = WshShell.AppActivate(winName)
-	   'if rcSuccess then WshShell.sendkeys "%{F4}"
+	   'rcSuccess = WSH.AppActivate(winName)
+	   'if rcSuccess then WSH.sendkeys "%{F4}"
 	End Function
 	
 	' '隐藏指定标题窗口
@@ -690,7 +691,7 @@ class vbsfun
 			if len(strMatches)=0 then exit Sub
 			dtmNewDate = FormatDateTime(strMatches,D)
 		'set date on local computer
-		   WshShell.Run "cmd.exe /c date " & dtmNewDate,0 
+		   WSH.Run "cmd.exe /c date " & dtmNewDate,0 
 		'get time info
 		   objRegEx.Pattern = "\d{2,2}:\d{2,2}:\d{2,2}"
 			Set colMatches = objRegEx.Execute(Contents) 
@@ -702,7 +703,7 @@ class vbsfun
 			dtmNewTime = strMatches1
 			'wscript.echo dtmNewTime
 		'set time on local computer
-		   WshShell.Run "cmd.exe /c time " & dtmNewTime,0 
+		   WSH.Run "cmd.exe /c time " & dtmNewTime,0 
 		End if
 		if err.number<>0 then
 		  log("获取网络时间错误："&Err.Source&Err.Description&Err.Number)
@@ -873,10 +874,10 @@ class vbsfun
 	'示例  CreatLink("C:\Program Files\Adobe\Photoshop","D:\Program Files\Adobe\Photoshop") '把D盘photoshop映射到C盘,实际程序文件存放在D盘
 	Public Function CreatLink(NewDir,OldDir)
 	  if FSO.FolderExists(NewDir) then 
-	     WshShell.run "cmd.exe /c rd "& NewDir,,false
+	     WSH.run "cmd.exe /c rd "& NewDir,,false
 	  end if
 	  if FSO.FolderExists(OldDir) then
-	     WshShell.run "cmd.exe /c mklink /d """& NewDir & """ """  & OldDir&"""" ,,false
+	     WSH.run "cmd.exe /c mklink /d """& NewDir & """ """  & OldDir&"""" ,,false
 	  End if
 	End Function
 	

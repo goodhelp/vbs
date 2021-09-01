@@ -16,12 +16,13 @@ call myfun.log("结束判断是否超级用户")
 rem ==============前期程序=====================
 call myfun.SyncTime '同步时间
 call myfun.log("完成同步时间")
+'call myfun.SysVolme '音量调为最大
 call myfun.ImportReg(vbsPath&"\reg.reg")  '自动导入注册表
 call myfun.log("完成注册表导入")
 call myfun.RunBat(vbsPath&"\run.bat")  '执行批处理
 call myfun.log("批处理执行完成")
 rem ==============分组任务=====================
-dim CptName,g,GroupIni,GroupName,Plist
+dim CptName,g,GroupIni,GroupName,Plist,inifile
 CptName=myfun.GetComputerName '取得机器名
 For g=1 to 10
     GroupIni=vbsPath&"\"&g&"\config.ini"	
@@ -39,13 +40,13 @@ For g=1 to 10
 Next
 call myfun.log("分组任务执行完成")
 rem =============执行程序======================
+inifile=vbsPath&"\setup.ini"
 if myfun.IsExitFile(vbsPath&"\Runpg.vbs") then
     import(vbsPath&"\Runpg.vbs")
 end if
 rem =============进程查杀======================
-GroupIni=vbsPath&"\default.ini"
 For g=1 to 20
-    Plist=myfun.ReadIni("查杀程序",CStr(g),"",GroupIni)
+    Plist=myfun.ReadIni("查杀程序",CStr(g),"",inifile)
 	if len(Plist)=0 then exit for
 	call myfun.CloseProcess(Plist)
 Next
@@ -58,7 +59,6 @@ end if
 '===========销毁实例===========================
 call myfun.log("<=="&Now&"========")
 set myfun=nothing
-
 
 '=========================导入函数=============
 Sub import(sFile)

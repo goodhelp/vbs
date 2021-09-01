@@ -881,4 +881,15 @@ class vbsfun
 	  End if
 	End Function
 	
+	'功能 设置系统音量为最大
+	'参数 无标题
+	'返回值 
+	'示例：SysVolme 原理 增大音量的虚拟键码是 AF，然后找一个在线URL解码编码工具对 %97%AF 进行解码，得到的字符是 “棷”。
+	'打开默认浏览器的首页 Sendkeys "棳"  打开“我的电脑” Sendkeys "椂"  打开“计算器”  Sendkeys "椃" 
+	Public Sub SysVolme()
+	  dim i
+	  for i=0 to 50
+	     WSH.Sendkeys "棷"  '减音量 Sendkeys "棶" 禁音 Sendkeys "棴"
+	  next	
+	End Sub
 end class

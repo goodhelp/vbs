@@ -49,6 +49,7 @@ set myfun=New vbsfun
 'msgbox myfun.ReadIni("节点","键名","默认值","d:\123.ini") '读ini文件
 'call myfun.CreatLink("d:\pg","C:\Program Files (x86)")  ''把C盘程序目录映射到D盘pg目录,访问D:\pg相当于访问C:\Program Files (x86)内容
 msgbox "系统运行了："&myfun.GetOsRunTime&"分钟"
+'call myfun.SysVolme  '把系统音量调到最大
 
 dim cptname
 cptname=myfun.GetComputerName

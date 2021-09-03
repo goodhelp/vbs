@@ -1,18 +1,21 @@
 class vbsfun
 	' 类实例化时执行的代码
-	Public WSH,FSO,DWX,CurrentPath
+	Public WSH,FSO,DWX,AU3,CurrentPath
 	private sub Class_Initialize()
 		Set WSH = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
 		Set DIC = CreateObject("Scripting.Dictionary")
 		CurrentPath = createobject("Scripting.FileSystemObject").GetFile(Wscript.ScriptFullName).ParentFolder.Path
 		WSH.run "regsvr32 /i /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\dynwrapx.dll""",,true
+		WSH.run "regsvr32 /i /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\AutoItX3.dll""",,true
 		Set DWX = CreateObject("DynamicWrapperX")
+		Set AU3 = WScript.CreateObject("AutoItX3.Control")
 		'-----windows api--- kernel32.dll---------- 
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
 		'https://blog.csdn.net/yxp_xa/article/details/73320759
-		'https://www.jb51.net/shouce/vbs/vtoriVBScript.htm
+		'https://www.jb51.net/shouce/vbs/vtoriVBScript.htm 'vbs教程
+		'http://www.bathome.net/thread-4068-1-2.html 'wmic教程
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
 		DWX.Register "kernel32", "GetCommandLine", "r=s" 
         DWX.Register "kernel32", "GetPrivateProfileString","i=sssSus", "r=u" 
@@ -31,21 +34,27 @@ class vbsfun
 		DWX.Register "user32", "FindWindowEx", "i=llss", "r=l"
 		DWX.Register "user32", "SetCursorPos", "i=ll",  "r=l"
 		DWX.Register "user32", "SetWindowRgn","i=hpl","r=l"
-		DWX.Register "user32", "GetWindowThreadProcessId","i=hl","r=l"
+		DWX.Register "user32", "GetWindowThreadProcessId","i=hL","r=l"
 		DWX.Register "user32", "PostThreadMessage","i=uull","r=l"
 		DWX.Register "user32", "SendMessageTimeout","i=hlhhlll"
+		DWX.Register "user32", "MonitorFromWindow","i=hl","r=h"
+		DWX.Register "user32", "GetDesktopWindow","r=h"
 		'--------------gdi32.dll-----------------------------
 		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"	
+		DWX.Register "Dxva2","RestoreMonitorFactoryDefaults","i=h"
+		DWX.Register "Dxva2","GetNumberOfPhysicalMonitorsFromHMONITOR","i=hp"
 		
 	end sub
 
 	' 类销毁时执行的代码
 	private sub class_terminate()
 		WSH.run "regsvr32 /i /u /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\dynwrapx.dll""",,true
+		WSH.run "regsvr32 /i /u /s """&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\AutoItX3.dll""",,true
 		Set WSH=Nothing
 		Set FSO=Nothing
 		Set DIC=Nothing
 		Set DWX=Nothing
+		Set AU3=Nothing
 	end sub
 	
 	' 在桌面创建一个快捷方式 
@@ -647,12 +656,12 @@ class vbsfun
 	' 返回 无
 	' 例	call KillThread("Notepad","")
 	Public Function KillThread(classname,winName)
-	    dim hwnd,tid
+	    dim hwnd,tid,dwProcessID
 		if len(classname)=0 then classname=0
 		if len(winName)=0 then winName=0
 		hwnd=DWX.FindWindow(classname,winName)
 		if hwnd<>0 then
-			tid=DWX.GetWindowThreadProcessId(hwnd,0) '取得线程ID
+			tid=DWX.GetWindowThreadProcessId(hwnd,dwProcessID) '取得线程TID 进程ID为dwProcessID 
 			DWX.PostThreadMessage tid,&H12,0,0  '退出线程 
 		end if
 	End Function	
@@ -892,4 +901,56 @@ class vbsfun
 	     WSH.Sendkeys "棷"  '减音量 Sendkeys "棶" 禁音 Sendkeys "棴"
 	  next	
 	End Sub
+	
+	'功能 建本机安全策略禁止135 137 139 445 3389端口
+	'参数 策略名称
+	'返回值 无
+	'示例 call myfun.Depolicy("禁止常用端口")  '创建本机安全策略禁止135 137 139 445 3389端口
+	Public Sub Depolicy(plname)
+	    WSH.Run "netsh ipsec static del all",0,true
+	    WSH.Run "netsh  ipsec static add policy name="&plname,0,true
+		WSH.Run "netsh  ipsec static add filterlist name=denyip",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=135 protocol=TCP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=135 protocol=UDP",0,true
+		WSH.Run "netsh  psec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=137 protocol=TCP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=137 protocol=UDP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=139 protocol=TCP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=139 protocol=UDP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=445 protocol=TCP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=445 protocol=UDP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=3389 protocol=TCP",0,true
+		WSH.Run "netsh  ipsec static add filter filterlist=denyip srcaddr=Any dstaddr=Me dstport=3389 protocol=UDP",0,true
+		'WSH.Run "netsh ipsec static add filter filterlist=denyip srcaddr=Me dstaddr=Any dstport=3505 protocol=TCP",0,true  '禁止本机连接到任何地址的3505端口
+		'WSH.Run "netsh ipsec static add filter filterlist=denyip srcaddr=Me dstaddr=192.168.0.236",0,true '禁止本机连接到192.168.0.236
+		WSH.Run "netsh  ipsec static add filteraction name=denyact action=block",0,true
+		WSH.Run "netsh  ipsec static add rule name=killport policy="&plname&" filterlist=denyip filteraction=denyact",0,true
+		WSH.Run "netsh  ipsec static set policy name="&plname&" assign=y",0,true	
+	End Sub
+	
+	'功能 关闭或打开显示器
+	'参数 -1打开 或2关闭
+	'返回值 无
+	'示例  CloseMonitor(2)
+	Public Sub CloseMonitor(turn)
+	   DWX.PostMessage &HFFFF,&H112,&HF170&,turn
+	End Sub
+	
+	'判断com类是否安装
+	Public Function ComExist(ComName)
+		On Error Resume Next
+		Set CreateTest = CreateObject(ComName)
+		ComExist = CBool(Err.Number = 0)
+		On Error Goto 0
+	End Function	
+	
+	'功能 运行autoit3脚本文件
+	'参数 脚本文件全路径
+	'返回值
+	'示例  RunAu3("E:\软件工程\vbs\demo\monitor.au3") '恢复显示器所有设置
+    Public Sub RunAu3(au3File)
+	  if FSO.fileExists(au3File) then
+	     WSH.run """"&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\AutoIt3.exe"" "&au3File,0,false
+      End if	  
+	End Sub	
+	
 end class

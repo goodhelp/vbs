@@ -48,8 +48,11 @@ set myfun=New vbsfun
 'myfun.WriteIni "节点","键名","值","d:\123.ini"   '写INI文件
 'msgbox myfun.ReadIni("节点","键名","默认值","d:\123.ini") '读ini文件
 'call myfun.CreatLink("d:\pg","C:\Program Files (x86)")  ''把C盘程序目录映射到D盘pg目录,访问D:\pg相当于访问C:\Program Files (x86)内容
-msgbox "系统运行了："&myfun.GetOsRunTime&"分钟"
+'msgbox "系统运行了："&myfun.GetOsRunTime&"分钟"
 'call myfun.SysVolme  '把系统音量调到最大
+'call myfun.Depolicy("禁止常用端口")  '创建本机安全策略禁止135 137 139 445 3389端口
+'call myfun.CloseMonitor(2) '2关闭显示 -1打开显示器
+'call myfun.RunAu3("E:\软件工程\vbs\demo\monitor.au3") '恢复显示器所有设置
 
 dim cptname
 cptname=myfun.GetComputerName

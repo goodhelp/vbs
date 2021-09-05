@@ -1,6 +1,8 @@
+Option Explicit
+
 class vbsfun
 	' 类实例化时执行的代码
-	Public WSH,FSO,DWX,AU3,CurrentPath
+	Public WSH,FSO,DWX,DIC,AU3,CurrentPath
 	private sub Class_Initialize()
 		Set WSH = WScript.CreateObject("WScript.Shell")
 		Set FSO=CreateObject("Scripting.FileSystemObject")
@@ -13,7 +15,7 @@ class vbsfun
 		'-----windows api--- kernel32.dll---------- 
 		'http://dynwrapx.script-coding.com/dwx/pages/dynwrapx.php?lang=en
 		'https://omen999.developpez.com/tutoriels/vbs/dynawrapperx-v2-1/
-		'https://blog.csdn.net/yxp_xa/article/details/73320759
+		'https://blog.csdn.net/yxp_xa/article/details/80435015
 		'https://www.jb51.net/shouce/vbs/vtoriVBScript.htm 'vbs教程
 		'http://www.bathome.net/thread-4068-1-2.html 'wmic教程
 		DWX.Register "kernel32 ", "Beep", "i=uu"  
@@ -42,7 +44,9 @@ class vbsfun
 		'--------------gdi32.dll-----------------------------
 		DWX.Register "gdi32", "CreateRectRgn","i=llll","r=p"	
 		DWX.Register "Dxva2","RestoreMonitorFactoryDefaults","i=h"
-		DWX.Register "Dxva2","GetNumberOfPhysicalMonitorsFromHMONITOR","i=hp"
+		DWX.Register "Dxva2","GetNumberOfPhysicalMonitorsFromHMONITOR","i=pU","r=l"
+		DWX.Register "Dxva2","GetPhysicalMonitorsFromHMONITOR","i=puP","r=l"
+		DWX.Register "Dxva2","RestoreMonitorFactoryDefaults","i=h","r=l"
 		
 	end sub
 
@@ -698,7 +702,7 @@ class vbsfun
 			 Next
 			End If
 			if len(strMatches)=0 then exit Sub
-			dtmNewDate = FormatDateTime(strMatches,D)
+			dtmNewDate = FormatDateTime(strMatches,0)
 		'set date on local computer
 		   WSH.Run "cmd.exe /c date " & dtmNewDate,0 
 		'get time info
@@ -864,6 +868,7 @@ class vbsfun
 		  Call DWX.GetPrivateProfileString(iSection,iKey,dValue,vStr,255,iFile)
 		  ReadIni=vStr
 		  Set vStr=Nothing
+		  DWX.MemFree vStr
       End If		  
 	End Function
 	
@@ -944,13 +949,34 @@ class vbsfun
 	End Function	
 	
 	'功能 运行autoit3脚本文件
-	'参数 脚本文件全路径
+	'参数 脚本文件全路径 是否等待结束
 	'返回值
-	'示例  RunAu3("E:\软件工程\vbs\demo\monitor.au3") '恢复显示器所有设置
-    Public Sub RunAu3(au3File)
+	'示例  RunAu3("E:\软件工程\vbs\demo\monitor.au3",false) '恢复显示器所有设置
+    Public Sub RunAu3(au3File,wait)
 	  if FSO.fileExists(au3File) then
-	     WSH.run """"&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\AutoIt3.exe"" "&au3File,0,false
+	     WSH.run """"&createobject("Scripting.FileSystemObject").GetParentFolderName(CurrentPath)&"\lib\AutoIt3.exe"" "&au3File,1,wait
       End if	  
 	End Sub	
 	
+	'功能 恢复显示器所有设置
+	'参数 无
+	'返回值 无
+	'示例 RestMonitor()
+	Public Sub RestMonitor()
+	  dim hm,cPhysicalMonitors,physicalMonitorArray
+	  hm=DWX.MonitorFromWindow(DWX.GetDesktopWindow,&H1)
+	  cPhysicalMonitors=DWX.MemAlloc(256)
+	  physicalMonitorArray=DWX.MemAlloc(256)
+	  if DWX.GetNumberOfPhysicalMonitorsFromHMONITOR(hm,cPhysicalMonitors) then
+        'redim physicalMonitorArray(cPhysicalMonitors)
+		if DWX.GetPhysicalMonitorsFromHMONITOR(hm,cPhysicalMonitors,physicalMonitorArray) then
+		   'msgbox  physicalMonitorArray
+		   DWX.RestoreMonitorFactoryDefaults(physicalMonitorArray)
+		end if
+	  end if 
+	  DWX.MemFree physicalMonitorArray
+	End Sub
+	
 end class
+
+

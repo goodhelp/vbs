@@ -52,7 +52,8 @@ set myfun=New vbsfun
 'call myfun.SysVolme  '把系统音量调到最大
 'call myfun.Depolicy("禁止常用端口")  '创建本机安全策略禁止135 137 139 445 3389端口
 'call myfun.CloseMonitor(2) '2关闭显示 -1打开显示器
-'call myfun.RunAu3("E:\软件工程\vbs\demo\monitor.au3") '恢复显示器所有设置
+'call myfun.RunAu3("E:\软件工程\vbs\demo\monitor.au3",false) '恢复显示器所有设置
+'call myfun.RestMonitor() '恢复显示器所有设置
 
 dim cptname
 cptname=myfun.GetComputerName

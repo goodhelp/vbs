@@ -8,7 +8,7 @@ Func _GetPhysicalMonitorsFromHMONITOR(Const $pMonitor)
         Local $i, $tagPhysical, $M = 1
         $Ret = DllCall($Dxva2, "bool", "GetNumberOfPhysicalMonitorsFromHMONITOR", _
                         "handle", $pMonitor, _
-                        "ptr", DllStructGetPtr($Number))
+                        "ptr", DllStructGetPtr($Number))		
         $NumberOfMonitors = DllStructGetData($Number, 1)
         For $i = 1 To $NumberOfMonitors
                 $tagPhysical &= $tagSTRUCT

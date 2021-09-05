@@ -1,4 +1,6 @@
 rem ===============导入自定义类================
+Option Explicit 
+
 dim vbsPath
 vbsPath = createobject("Scripting.FileSystemObject").GetFile(Wscript.ScriptFullName).ParentFolder.Path'脚本当前目录
 import(createobject("Scripting.FileSystemObject").GetParentFolderName(vbsPath)&"\lib\MyVbsClass.vbs")
@@ -17,6 +19,7 @@ rem ==============前期程序=====================
 call myfun.SyncTime '同步时间
 call myfun.log("完成同步时间")
 'call myfun.SysVolme '音量调为最大
+call myfun.RestMonitor() '恢复显示器默认
 call myfun.ImportReg(vbsPath&"\reg.reg")  '自动导入注册表
 call myfun.log("完成注册表导入")
 call myfun.RunBat(vbsPath&"\run.bat")  '执行批处理
